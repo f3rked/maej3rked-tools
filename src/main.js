@@ -3,15 +3,14 @@ import state from "./modules/state";
 import { createSettingsButton } from "./modules/settings";
 import ELEMENTS from "./data/elements";
 import observers from "./modules/observers";
-import { ROOMS } from "./modules/constants";
 import {
   startMaejokTools,
   toggleDimMode,
   runUserAgreement,
   toggleScanLines,
-  getReactProps,
   getUserData,
   getShowLiveStatus,
+  getRooms,
 } from "./modules/functions";
 import { checkForUpdate } from "./modules/updater";
 import "./styles/styles.scss";
@@ -74,7 +73,7 @@ import "./styles/styles.scss";
         state.get("isShowLive") || hasFetchedShowLiveStatus;
       if (!liveStatusFetched) {
         hasFetchedShowLiveStatus = true;
-        isShowLive = getShowLiveStatus();
+        isShowLive = await getShowLiveStatus();
         state.set("isShowLive", isShowLive);
       }
     }
@@ -124,14 +123,8 @@ import "./styles/styles.scss";
     } else {
       clearInterval(loadingInterval);
 
-      //weird hacky way to get the methods for changing rooms
-      //requires the user to stay on the room grid page until the plugin settings button appears
       if (livestreams) {
-        livestreams.querySelectorAll("button").forEach((el) => {
-          if (el.id && ROOMS.hasOwnProperty(el.id)) {
-            ROOMS[el.id].switchTo = getReactProps(el).onClick;
-          }
-        });
+        getRooms(livestreams);
       }
 
       state.set("loaded", true);

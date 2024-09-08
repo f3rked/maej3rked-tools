@@ -258,8 +258,6 @@ export const keyPress = (event) => {
     return;
   }
 
-  console.log(event.code);
-
   const keys = {
     backtick: "Backquote",
     space: "Space",
@@ -354,14 +352,15 @@ export const keyPress = (event) => {
         event.preventDefault();
         return;
       } else {
-        for (let i in ROOMS) {
-          let j = bindMap[ROOMS[i].id];
+        const rooms = state.get("rooms");
+        for (let i in rooms) {
+          let j = bindMap[rooms[i].id];
 
           if (
             compareKeybind(keycombo, j) &&
-            typeof ROOMS[i].switchTo === "function"
+            typeof rooms[i].switchTo === "function"
           ) {
-            ROOMS[i].switchTo();
+            rooms[i].switchTo();
             event.stopPropagation();
             event.preventDefault();
             return;

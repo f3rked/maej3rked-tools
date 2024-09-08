@@ -24,6 +24,7 @@ const State = () => {
     audioElement: false,
     pendingKeybind: null,
     isShowLive: false,
+    rooms: [],
   };
 
   const get = (key) => {

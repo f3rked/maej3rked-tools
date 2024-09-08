@@ -153,7 +153,7 @@ export const toggleScanLines = (toggle) => {
   body.classList.toggle("maejok-hide-scan_lines", toggle);
 };
 
-export const getShowLiveStatus = () => {
+export const getShowLiveStatus = async () => {
   const status = localStorage.getItem("live-streams-status");
   let online = false;
 
@@ -165,6 +165,54 @@ export const getShowLiveStatus = () => {
   }
 
   return online;
+};
+
+export const getRooms = async (livestreams) => {
+  const authKey = "sb-wcsaaupukpdmqdjcgaoo-auth-token";
+  const auth = `Bearer ${getCookie(authKey).decoded}`;
+  const response = await fetch(`https://api.fishtank.live/v1/live-streams`, {
+    method: "GET",
+    headers: { Authorization: auth },
+  });
+  const data = await response.json();
+  //also run button react props lookup stuff here to set real functions
+
+  let roomMap = {};
+  data?.liveStreams.forEach((s) => {
+    const obj = (({ id, name }) => ({ id, name }))(s);
+    obj.switchTo = {};
+    roomMap[obj.id] = obj;
+  });
+
+  if (livestreams) {
+    //weird hacky way to get the methods for changing rooms
+    //requires the user to stay on the room grid page until the plugin settings button appears
+
+    livestreams.querySelectorAll("button").forEach((el) => {
+      if (el.id && roomMap.hasOwnProperty(el.id)) {
+        roomMap[el.id].switchTo = getReactProps(el).onClick;
+      }
+    });
+  }
+
+  state.set("rooms", roomMap);
+
+  console.log(roomMap);
+};
+
+export const getDefaultKeybinds = () => {
+  const rooms = state.get("rooms");
+  let keybinds = DEFAULT_KEYBINDS;
+  let index = 1;
+  rooms.forEach((r) => {
+    keybinds[r.id] = {
+      ctrlKey: false,
+      altKey: false,
+      shiftKey: false,
+      code: "KeyQ",
+    };
+    index++;
+  });
 };
 
 export const toggleControlOverlay = () => {
