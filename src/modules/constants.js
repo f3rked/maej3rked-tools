@@ -7,6 +7,10 @@ export const PACKAGE_URL = `${REPO_RAW_ROOT}/package.json`;
 export const ONE_MINUTE = 60 * 1000;
 export const TEN_MINUTES = ONE_MINUTE * 10;
 
+export const CHAT_OVERLAY_MESSAGE_QUEUE = [];
+
+export const VIDEOPLAYER_HOTKEYS = ['m', 'f','c','k', ' '];
+
 export const SOUNDS = new Map([
   //long
   ["doom", "mp3"],
@@ -164,6 +168,158 @@ export const DARK_MODE_STYLES = `
   filter: brightness(0.75);
 }
 `;
+
+export const CHAT_OVERLAY_CONFIG = {
+  overlayWrapper: {
+    id: 'chatOverlayWrapper',
+    style: `
+      position: relative;
+      right: 16px;
+      pointer-events: auto;
+      width: 18vw;
+      height: calc(100% - 128px);
+      background-color: rgba(0, 0, 0, 0);
+      z-index: 9999;
+      display: none; /* Hidden by default */
+      border-radius: 4px;
+      padding: 10px;
+      box-sizing: border-box;
+      float: right;
+      bottom: 64px;
+      top: 64px;
+      transition: background-color 0.2s ease;
+    `
+  },
+  overlayContainer: {
+    id: 'chatOverlayContainer',
+    style: `
+      position: relative;
+      width: 100%;
+      height: calc(100% - 48px); 
+      overflow-y: auto;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      overflow: -moz-scrollbars-none;
+    `
+  },
+  scrollBottomButton: {
+    id: 'scrollToBottomButton',
+    textContent: 'Scroll to Bottom',
+    style: `
+      position: absolute;
+      left: 50%;
+      bottom: 58px;
+      cursor: pointer;
+      text-align: center;
+      padding: 10px 20px;
+      font-weight: 600;
+      background-color: hsla(53,88%,78%,.1);
+      color: #f8ec94;
+      text-transform: uppercase;
+      border-radius: 4px;
+      border: 1px solid #f8ec94;
+      transform: translateX(-50%);
+      display: none; /* Hidden by default */
+      z-index: 10000;
+      width: 95%;
+    `
+  },
+  hideChatOverlayButtonWrapper: {
+    className: 'livepeer-video-player_fullscreen__qCmpW',
+    id: 'hidechatOverlayButtonWrapper',
+    style: `
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,0,0,0.5);
+      right: 48px;
+    `
+  },
+  hideChatOverlayButton: {
+    id: 'toggleChatButton',
+    type: 'button',
+    ariaPressed: 'false',
+    ariaLabel: 'Toggle Chat Overlay',
+    title: 'Toggle Chat Overlay',
+    style: `
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 24px;
+      height: 24px;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    `,
+    innerHTML: `
+      <div class="icon_icon__bDzMA">
+        <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+          <path d="M20 2H2v20h2V4h16v12H6v2H4v2h2v-2h16V2h-2z" fill="currentColor"></path>
+        </svg>
+      </div>
+    `
+  },
+  messageInputContainer: {
+    id: 'messageInputContainer',
+    style: `
+      position: absolute;
+      border-radius: 0px 0px 4px 4px;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 5px;
+      box-sizing: border-box;
+      transition: opacity 0.2s ease;
+      z-index: 10001;
+      opacity: 0;
+    `
+  },
+  messageInput: {
+    type: 'text',
+    id: 'messageInput',
+    placeholder: 'Type a message...',
+    style: `
+      flex: 1;
+      height: 100%;
+      padding: 0 10px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 5px;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+      box-shadow: none;
+      outline: none;
+    `
+  },
+  sendButton: {
+    id: 'sendButton',
+    textContent: 'Send',
+    style: `
+      margin-left: 8px;
+      padding: 0 10px;
+      height: 100%;
+      background-color: transparent;
+      border: none;
+      border-radius: 5px;
+      color: #f8ec94;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.2s ease;
+      transform: scaleX(-1);
+      opacity: .7;
+    `,
+    innerHTML: `
+      <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+        <path d="M13 19h2v-4h7V9h-7V5h-2v2h-2v2H9v2H7v2h2v2h2v2h2v2zM8 7H6v2H4v2H2v2h2v2h2v2h2v2h2v-2H8v-2H6v-2H4v-2h2V9h2V7zm0 0h2V5H8v2z" fill="currentColor"></path>
+      </svg>
+    `
+    
+  }
+};
 
 export const SCREEN_TAKEOVERS_STYLES = `
 .happening_happening__Ca2E7,

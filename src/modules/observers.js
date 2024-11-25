@@ -9,6 +9,8 @@ import {
   toggleNavigationOverlay,
   toggleTokenConversion,
   toggleControlOverlay,
+  enableChatOverlay,
+  addMessageToChatOverlay,
   createEventLogEntry,
   hideToastMessage,
   hideGiftMessage,
@@ -34,6 +36,9 @@ const observers = {
 
           mutation.addedNodes.forEach((addedNode) => {
             processChatMessage(addedNode);
+            if(config.get("enableFullScreenChatOverlay") && state.get().isPlayerFullscreen){
+              addMessageToChatOverlay(addedNode);
+            }
           });
         });
       });
@@ -95,20 +100,13 @@ const observers = {
       state.get("observers").modal?.disconnect();
   
       const nextElement = document.getElementById("__next");
-  
+      const tokenModals = `${ELEMENTS.token.proflepicModalTokens.selector}, ${ELEMENTS.token.generateLootPrice.selector}, ${ELEMENTS.token.topBarUserTokens.selector}, ${ELEMENTS.token.ttsModalTokens.selector}, ${ELEMENTS.token.sfxModalTokens.selector}, ${ELEMENTS.token.toysFishtoysTokens.selector}, ${ELEMENTS.token.buyTokensModal.selector}, ${ELEMENTS.token.voteModalTokens.selector} span`;
       const modalSubtreeObserver = (modalNode) => {
         const modalNestedObserver = new MutationObserver((mutations) => {
           mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((childNode) => {
               if (childNode.nodeType === Node.ELEMENT_NODE) {
-                if (
-                  childNode.matches(
-                    `${ELEMENTS.token.generateLootPrice.selector}, ${ELEMENTS.token.topBarUserTokens.selector}, ${ELEMENTS.token.ttsModalTokens.selector}, ${ELEMENTS.token.sfxModalTokens.selector}, ${ELEMENTS.token.toysFishtoysTokens.selector}, ${ELEMENTS.token.buyTokensModal.selector}, ${ELEMENTS.token.voteModalTokens.selector} span`
-                ) ||
-                  childNode.querySelector(
-                    `${ELEMENTS.token.generateLootPrice.selector}, ${ELEMENTS.token.topBarUserTokens.selector}, ${ELEMENTS.token.ttsModalTokens.selector}, ${ELEMENTS.token.sfxModalTokens.selector}, ${ELEMENTS.token.toysFishtoysTokens.selector}, ${ELEMENTS.token.buyTokensModal.selector}, ${ELEMENTS.token.voteModalTokens.selector} span`
-                  )
-                ) {
+                if (childNode.matches(tokenModals) || childNode.querySelector(tokenModals)) {
                   toggleTokenConversion(config.get("convertTokenValues"));
                 }
               }
@@ -142,10 +140,7 @@ const observers = {
               // Ensure any previous observer is disconnected before setting up a new one
               state.get("observers").modalNestedObserver?.disconnect();
               modalSubtreeObserver(addedNode); // Set up a fresh observer on modal content
-  
-              addedNode.querySelectorAll(
-                `${ELEMENTS.token.topBarUserTokens.selector}, ${ELEMENTS.token.ttsModalTokens.selector}, ${ELEMENTS.token.sfxModalTokens.selector}, ${ELEMENTS.token.toysFishtoysTokens.selector}, ${ELEMENTS.token.buyTokensModal.selector}, ${ELEMENTS.token.voteModalTokens.selector} span`
-              ).forEach((tokenElement) => {
+              addedNode.querySelectorAll(tokenModals).forEach((tokenElement) => {
                 if (!tokenElement.closest(`.${ELEMENTS.token.toysBigToyPrice.classes[0]}.${ELEMENTS.token.toysBigToyPrice.classes[1]}`)) {
                   toggleTokenConversion(config.get("convertTokenValues"));
                 }
@@ -244,7 +239,7 @@ const observers = {
           if (!livestreamAdded && !playerControlsAdded) {
             return;
           }
-
+          const enableFullScreenChatOverlay = config.get("enableFullScreenChatOverlay");
           const controlOverlayEnabled = config.get("enableControlOverlay");
           const timestampOverlayEnabled = config.get("enableTimestampOverlay");
           const userOverlayEnabled = config.get("enableUserOverlay");
@@ -256,6 +251,7 @@ const observers = {
             !controlOverlayEnabled &&
             !timestampOverlayEnabled &&
             !userOverlayEnabled &&
+            !enableFullScreenChatOverlay &&
             !hideNavigationOverlayEnabled
           ) {
             return;
@@ -281,6 +277,10 @@ const observers = {
 
               if (hideNavigationOverlayEnabled) {
                 toggleNavigationOverlay(true);
+              }
+            
+              if (enableFullScreenChatOverlay){
+                enableChatOverlay(true);
               }
             }
 

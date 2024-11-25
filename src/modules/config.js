@@ -13,6 +13,8 @@ const Config = () => {
     usdExchangeRate: 1.00,
     tokenToUsdRate: 0.0828,
 
+    enableFullScreenChatOverlay: false,
+
     showHiddenItems: false,
     enablePopoutChatButton: false,
     enableBigScreen: true,
@@ -728,6 +730,18 @@ const Config = () => {
               help: {
                 label: "?",
                 text: `<p>Enabling this option will add a button to open chat in a new window</p>`,
+              },
+            },
+            // enableFullScreenChatOverlay
+            {
+              name: "enableFullScreenChatOverlay",
+              label: "Enable Full Screen Chat Overlay",
+              type: "toggle",
+              value: cfg.enableFullScreenChatOverlay,
+              group: "chat-misc",
+              help: {
+                label: "?",
+                text: `<p>Enabling this option will add a chat overlay in fullscreen mode.</p>`,
               },
             },
           ],

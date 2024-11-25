@@ -3,6 +3,8 @@ const State = () => {
   const defaults = {
     loaded: false,
     isPopoutChat: false,
+    isPlayerFullscreen: false,
+    isChatOverlayAutoscrolling: false,
     modals: [],
     user: null,
     bigScreenState: false,
