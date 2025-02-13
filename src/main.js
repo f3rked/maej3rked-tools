@@ -8,6 +8,7 @@ import {
   startMaejokTools,
   toggleDimMode,
   runUserAgreement,
+  hookWebSocket,
   toggleScanLines,
   getReactProps,
   setUserData,
@@ -24,10 +25,11 @@ import "./styles/styles.scss";
   if (!userAgreementAccepted) {
     return;
   }
-
+  
   const enableDimMode =
     config.get("enableDimMode") && config.get("enablePlugin");
 
+  hookWebSocket();
   toggleDimMode(enableDimMode);
   toggleScanLines(config.get("hideScanLines") && config.get("enablePlugin"));
 

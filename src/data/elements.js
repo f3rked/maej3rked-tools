@@ -736,6 +736,12 @@ const Elements = {
       selector: `[class^=item-generator-modal_cost__]`,
       classes: "item-generator-modal_cost__XJRS_",
     },
+    proflepicModalTokens: {
+      selector: `[class^=pfp-modal_header__]`,
+      classes: "pfp-modal_header__e1BJ0",
+    },
+
+    
   },
 };
 

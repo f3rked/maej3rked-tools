@@ -30,6 +30,7 @@ import {
   toggleTimestampOverlay,
   toggleTokenConversion,
   togglePopoutChatButton,
+  enableChatOverlay,
   toggleNavigationOverlay,
   toggleUserOverlay,
   keyEventToString,
@@ -91,6 +92,7 @@ export const saveSettings = async () => {
   toggleNavigationOverlay(config.get("hideNavigationOverlay"));
   toggleUserOverlay(config.get("enableUserOverlay"));
   toggleScreenTakeovers(config.get("hideScreenTakeovers"));
+  enableChatOverlay(config.get("enableFullScreenChatOverlay"));
 
   if (!config.get("enableBigScreen")) {
     toggleBigScreen(false);
