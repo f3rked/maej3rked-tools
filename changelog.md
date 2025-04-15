@@ -1,5 +1,21 @@
 # MAEJ3RKED-TOOLS CHANGE LOG
 
+# **_v2.28.4_**
+
+_Release: 04-14-2025_
+
+### Notes
+
+- N/A
+
+### Bug Fixes
+
+- Fix issue with plugin loading due to changed class name for chat container
+
+### Features Added / Changed
+
+- N/A
+
 # **_v2.28.3_**
 
 _Release: 03-10-2025_

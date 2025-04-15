@@ -25,6 +25,10 @@ const Elements = {
     selector: `[class^="global-mission-modal_backdrop"]`,
     class: "global-mission-modal_backdrop__oVezg",
   },
+  mainPanel: {
+    selector: `[class^="main-panel_main-panel__"]`,
+    class: "main-panel_main-panel__4RhyF",
+  },
   livestreams: {
     selector: `[class*="live-streams_live-streams__"]`,
     class: "live-streams_live-streams__BYV96",
@@ -218,8 +222,8 @@ const Elements = {
       },
     },
     list: {
-      selector: `[class^="chat_messages__"]`,
-      class: `chat_messages__2IBEJ`,
+      selector: `[class^="chat-messages_chat-messages__"]`,
+      class: `chat-messages_chat-messages__UeL0a`,
     },
     room: {
       selector: `[class^="chat-room-selector_chat-room-selector__"]`,
