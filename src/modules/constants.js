@@ -1,3 +1,5 @@
+import ELEMENTS from "../data/elements";
+
 export const VERSION = process.env.VERSION;
 
 export const REPO_RAW_ROOT = process.env.REPO.raw;
@@ -6,6 +8,10 @@ export const PACKAGE_URL = `${REPO_RAW_ROOT}/package.json`;
 
 export const ONE_MINUTE = 60 * 1000;
 export const TEN_MINUTES = ONE_MINUTE * 10;
+
+export const CHAT_OVERLAY_MESSAGE_QUEUE = [];
+
+export const VIDEOPLAYER_HOTKEYS = ['m', 'f','c','k', ' '];
 
 export const SOUNDS = new Map([
   //long
@@ -164,6 +170,70 @@ export const DARK_MODE_STYLES = `
   filter: brightness(0.75);
 }
 `;
+
+
+export const TOKEN_SELECTORS = `${ELEMENTS.token.voteModalTokens.selector},${ELEMENTS.token.audtionToysModalTokens.selector},${ELEMENTS.token.wetmarketBuyModalTokens.selector},${ELEMENTS.token.wetmarketModalTokens.selector},${ELEMENTS.token.proflepicModalTokens.selector},${ELEMENTS.token.generateLootPrice.selector}, ${ELEMENTS.token.topBarUserTokens.selector}, ${ELEMENTS.token.ttsModalTokens.selector}, ${ELEMENTS.token.sfxModalTokens.selector}, ${ELEMENTS.token.toysFishtoysTokens.selector}, ${ELEMENTS.token.buyTokensModal.selector}`;
+
+
+export const CHAT_OVERLAY_CONFIG = {
+  overlayWrapper: {
+    id: 'chatOverlayWrapper',
+    class: 'chatoverlay-overlaywrapper',
+  },
+  overlayContainer: {
+    class: 'chatoverlay-chatcontainer',
+  },
+  scrollBottomButton: {
+    textContent: 'Scroll to Bottom',
+    class: 'chatoverlay-scrollbutton',
+  },
+  hideChatOverlayButton: {
+    id: 'toggleChatButton',
+    type: 'button',
+    ariaPressed: 'false',
+    ariaLabel: 'Toggle Chat Overlay',
+    style: 'display: none',
+    title: 'Toggle Chat Overlay',
+    innerHTML: `
+      <div class="icon_icon__bDzMA">
+        <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+          <path d="M20 2H2v20h2V4h16v12H6v2H4v2h2v-2h16V2h-2z" fill="currentColor"></path>
+        </svg>
+      </div>
+    `
+  },
+  fullscreenButton: { 
+    type: 'button',
+    ariaLabel: 'Toggle Fullscreen',
+    title: 'Toggle Fullscreen',
+    class: 'fullscreen-toggle-button', // Add a class if needed for easier selection
+    innerHTML: `
+      <div class="icon_icon__bDzMA">
+        <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+          <path d="M21 3h-8v2h4v2h2v4h2V3zm-4 4h-2v2h-2v2h2V9h2V7zm-8 8h2v-2H9v2H7v2h2v-2zm-4-2v4h2v2H5h6v2H3v-8h2z" fill="currentColor"></path>
+        </svg>
+      </div>
+    `
+  },
+  messageInputContainer: {
+    class: 'chatoverlay-messageInputContainer',
+  },
+  messageInput: {
+    type: 'text',
+    placeholder: 'Type a message...',
+    class: 'chatoverlay-messageInputBox',
+  },
+
+  sendButton: {
+    textContent: 'Send',
+    class: 'chatoverlay-sendbutton',
+    innerHTML: `
+      <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+        <path d="M13 19h2v-4h7V9h-7V5h-2v2h-2v2H9v2H7v2h2v2h2v2h2v2zM8 7H6v2H4v2H2v2h2v2h2v2h2v2h2v-2H8v-2H6v-2H4v-2h2V9h2V7zm0 0h2V5H8v2z" fill="currentColor"></path>
+      </svg>
+    `
+  }
+};
 
 export const SCREEN_TAKEOVERS_STYLES = `
 .happening_happening__Ca2E7,

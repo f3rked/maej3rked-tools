@@ -30,6 +30,7 @@ import {
   toggleTimestampOverlay,
   toggleTokenConversion,
   togglePopoutChatButton,
+  enableChatOverlay,
   toggleNavigationOverlay,
   toggleUserOverlay,
   keyEventToString,
@@ -93,6 +94,7 @@ export const saveSettings = async () => {
   toggleTokenConversion(config.get("convertTokenValues"));
   toggleNavigationOverlay(config.get("hideNavigationOverlay"));
   toggleScreenTakeovers(config.get("hideScreenTakeovers"));
+  enableChatOverlay(config.get("enableFullScreenChatOverlay"));
 
   toggleCleanPlayerHeader(config.get("enableTimestampOverlay") || config.get("enableUserOverlay"));
   toggleTimestampOverlay(config.get("enableTimestampOverlay"));

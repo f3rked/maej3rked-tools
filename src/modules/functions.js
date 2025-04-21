@@ -10,7 +10,11 @@ import {
   BIG_SCREEN_STYLES_OFFLINE,
   BIGSCREEN_STRETCH_STYLES,
   DEFAULT_KEYBINDS,
+  CHAT_OVERLAY_CONFIG,
+  TOKEN_SELECTORS,
   REPO_URL_ROOT,
+  CHAT_OVERLAY_MESSAGE_QUEUE,
+  VIDEOPLAYER_HOTKEYS,
 } from "./constants";
 import Message from "../classes/Message";
 import ELEMENTS from "../data/elements";
@@ -24,6 +28,7 @@ import {
 } from "./recent-chatters";
 import refactoredObservers from "./observers/index";
 import observers from "./observers";
+import { decode, encode } from "@msgpack/msgpack";
 
 export const getReactProps = (element) => {
   if (!element) return null;
@@ -614,6 +619,7 @@ export const toggleTokenConversion = (toggle) => {
       element.classList.contains(ELEMENTS.token.ttsModalTokens.class) ||
       element.classList.contains(ELEMENTS.token.sfxModalTokens.class)
     ) {
+            //change element width slightly so it doesnt look weird
       element.style.width = "135px";
     }
   };
@@ -628,36 +634,388 @@ export const toggleTokenConversion = (toggle) => {
       element.classList.contains(ELEMENTS.token.ttsModalTokens.class) ||
       element.classList.contains(ELEMENTS.token.sfxModalTokens.class)
     ) {
+      //change element width back so it doesnt look weird
       element.style.width = "96px";
     }
   };
 
   const processElements = () => {
-    const selectors = [
-      ELEMENTS.token.topBarUserTokens.selector,
-      ELEMENTS.token.ttsModalTokens.selector,
-      ELEMENTS.token.sfxModalTokens.selector,
-      ELEMENTS.token.toysFishtoysTokens.selector,
-      ELEMENTS.token.buyTokensModal.selector,
-      ELEMENTS.token.generateLootPrice.selector,
-      ELEMENTS.token.voteModalTokens.selector + " span",
-    ];
-
-    selectors.forEach((selector) => {
-      document.querySelectorAll(selector).forEach((element) => {
+      document.querySelectorAll(TOKEN_SELECTORS).forEach((element) => {
         if (element.closest(ELEMENTS.token.toysBigToyPrice.selector)) return;
+        //This needs to be here as the bid modal will crash the site if its edited
+        if(element.innerHTML.indexOf("item-market-modal_bid__G5bls") !== -1){return;}
         if (toggle) {
           convertTokensToLocalCurrency(element);
         } else {
           revertToOriginalTokens(element);
         }
       });
-    });
   };
 
   // Initial processing
   processElements();
 };
+
+function toggleFullscreen(element) {
+  const isFullscreen = state.get("isPlayerFullscreen")
+  if (!isFullscreen) {
+      if (element.requestFullscreen) {
+        element.requestFullscreen();
+      } else if (element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+      } else if (element.webkitRequestFullScreen) {
+        element.webkitRequestFullScreen();
+      } else if (element.msRequestFullscreen) {
+        element.msRequestFullscreen();
+      }
+  } else {
+      if (document.exitFullscreen) {
+          document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+      } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+      }
+  }
+}
+
+const createElementWithConfig = (type, config) => {
+  const element = document.createElement(type);
+  applyConfigToElement(element, config);
+  return element;
+};
+
+export const enableChatOverlay = (toggle) => {
+  // Get existing elements by their IDs and selectors
+  let chatOverlayWrapper = document.getElementById("chatOverlayWrapper")
+  let toggleChatButton = document.getElementById("toggleChatButton");
+  let fullscreenButtonContainer = document.querySelector(".hls-stream-player_fullscreen__Y3RhA");
+  let videoPlayerElement = document.querySelector('.hls-stream-player_hls-stream-player__BJiGl');
+
+  // Clean up any existing overlay elements if they exist
+  if (chatOverlayWrapper) chatOverlayWrapper.remove();
+  chatOverlayWrapper = null;
+  if (toggleChatButton) toggleChatButton.remove();
+  toggleChatButton = null;
+
+  // If the toggle is enabled, initialize and display the chat overlay
+  if (toggle) {
+    if (!chatOverlayWrapper) {
+
+      // Main container
+      chatOverlayWrapper = createElementWithConfig('div', CHAT_OVERLAY_CONFIG.overlayWrapper);
+
+      // Sub-elements
+      var chatOverlayContainer = createElementWithConfig('div', CHAT_OVERLAY_CONFIG.overlayContainer);
+      var scrollToBottomButton = createElementWithConfig('div', CHAT_OVERLAY_CONFIG.scrollBottomButton);
+      var messageInputContainer = createElementWithConfig('div', CHAT_OVERLAY_CONFIG.messageInputContainer);
+      var messageInput = createElementWithConfig('input', CHAT_OVERLAY_CONFIG.messageInput);
+      var sendButton = createElementWithConfig('button', CHAT_OVERLAY_CONFIG.sendButton);
+
+      chatOverlayContainer.addEventListener('scroll', () => {
+        const { scrollTop, scrollHeight, clientHeight } = chatOverlayContainer;
+        const isAutoScrolling = scrollTop + clientHeight >= scrollHeight - 1;
+
+        // Update autoscrolling state and toggle the "Scroll to Bottom" button visibility
+        state.set("isChatOverlayAutoscrolling", isAutoScrolling);
+        scrollToBottomButton.style.display = isAutoScrolling ? 'none' : 'block';
+      });
+
+      scrollToBottomButton.addEventListener('click', () => {
+        chatOverlayContainer.scrollTop = chatOverlayContainer.scrollHeight;
+        state.set("isChatOverlayAutoscrolling", true);
+        scrollToBottomButton.style.display = 'none';
+      });
+
+      messageInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && !sendButton.disabled) {
+          event.preventDefault(); // Prevent default form submission behavior
+          sendButton.click(); // Trigger the "Send" button
+        }
+        if (!messageInput.inputIsFocused && VIDEOPLAYER_HOTKEYS.includes(event.key.toLowerCase())) {
+          event.stopPropagation();
+        }
+      });
+
+      // Update "Send" button state based on input content
+      messageInput.addEventListener('input', () => {
+        const isEmpty = !messageInput.value.trim();
+        sendButton.disabled = isEmpty;
+        sendButton.style.opacity = isEmpty ? '0.5' : '1';
+      });
+
+      sendButton.addEventListener('click', () => {
+        if (!sendButton.disabled) {
+          const message = messageInput.value.trim();
+          if (message) {
+            sendMessage(2, ["chat:message", message], { compress: true });
+          }
+          messageInput.value = ''; // Clear the input box
+          sendButton.disabled = true; // Disable the button again
+          sendButton.style.opacity = '0.5'; // Indicate disabled state
+        }
+      });
+
+      messageInputContainer.appendChild(messageInput);
+      messageInputContainer.appendChild(sendButton);
+      chatOverlayWrapper.appendChild(chatOverlayContainer);
+      chatOverlayWrapper.appendChild(scrollToBottomButton);
+      chatOverlayWrapper.appendChild(messageInputContainer);
+      
+    } else {
+      console.error('Chat Overlay container already exists.');
+    }
+
+    
+    // Set up the "Hide Chat Overlay" button if the fullscreen button container exists
+    if (fullscreenButtonContainer) {
+      Object.assign(fullscreenButtonContainer.style, {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
+      });
+      
+      if (!toggleChatButton) {
+        const toggleChatButton = createElementWithConfig('button', CHAT_OVERLAY_CONFIG.hideChatOverlayButton);
+
+        // Add functionality to toggle the chat overlay visibility
+        toggleChatButton.addEventListener('click', () => {
+          const isVisible = chatOverlayWrapper.style.display === 'block';
+          chatOverlayWrapper.style.display = isVisible ? 'none' : 'block';
+          toggleChatButton.setAttribute('aria-pressed', !isVisible);
+          if (state.get("isChatOverlayAutoscrolling")) {
+            chatOverlayContainer.scrollTop = chatOverlayContainer.scrollHeight;
+          }
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+          const isFullscreen = document.fullscreenElement !== null; // Check if an element is in fullscreen mode
+          //console.log(`Fullscreen state changed: ${isFullscreen ? 'ENTERED' : 'EXITED'}`);
+          state.set("isPlayerFullscreen", isFullscreen);
+          chatOverlayWrapper.style.display = isFullscreen ? 'block' : 'none';
+          toggleChatButton.style.display = isFullscreen ? 'flex' : 'none';
+          if (isFullscreen) {
+            chatOverlayContainer.scrollTop = chatOverlayContainer.scrollHeight;
+            state.set("isChatOverlayAutoscrolling", true);
+            scrollToBottomButton.style.display = 'none';
+          }
+        });
+        
+        //replace the existing full screen button so we can open the overlay
+        const fullscreenButton = createElementWithConfig('button', CHAT_OVERLAY_CONFIG.fullscreenButton);
+        const oldFullscreenButton = fullscreenButtonContainer.querySelector('button');
+        fullscreenButton.onclick = () => {
+          const element = document.querySelector(".live-stream-player_container__A4sNR");
+          toggleFullscreen(element);
+        };
+        if (oldFullscreenButton) {
+          fullscreenButtonContainer.replaceChild(fullscreenButton, oldFullscreenButton);
+        } else {
+          fullscreenButtonContainer.appendChild(fullscreenButton);
+        }
+        fullscreenButtonContainer.appendChild(toggleChatButton);
+      } else {
+        console.error('Hide Chat Overlay button already exists.');
+      }
+    } else {
+      console.error('Fullscreen button container doesn\'t exist.');
+    }
+    // Attach the chat overlay to the video player
+    if (videoPlayerElement && fullscreenButtonContainer) {
+      chatOverlayWrapper.style.opacity = config.get("chatOverlayOpacity");
+      videoPlayerElement.appendChild(chatOverlayWrapper);
+    } else {
+      console.error('Video player element not found. Unable to attach chat overlay.');
+    }
+  }
+};
+
+export const addMessageToChatOverlay = (node) => {
+  // Clone the incoming message node to avoid modifying the original
+  const updatedMessages = node.cloneNode(true);
+  const chatOverlayContainer = document.querySelector(".chatoverlay-chatcontainer");
+
+  // Get the current number of messages in the chat overlay
+  const countOfChatMessages = chatOverlayContainer.children.length;
+
+  if (state.get("isChatOverlayAutoscrolling")) {
+
+    // Add the new message to the chat overlay container
+    chatOverlayContainer.appendChild(updatedMessages);
+
+    // Limit the number of messages in the chat overlay to 100
+    if (countOfChatMessages >= 100) {
+      const excessMessages = countOfChatMessages - 100 + 1; // +1 for the newly added message
+      for (let i = 0; i < excessMessages; i++) {
+        chatOverlayContainer.removeChild(chatOverlayContainer.firstElementChild);
+      }
+    }
+
+    // Check if there are queued messages and add them to the chat
+    if (CHAT_OVERLAY_MESSAGE_QUEUE.length > 0) {
+      const fragment = document.createDocumentFragment();
+
+      // Add all queued messages to a document fragment
+      while (CHAT_OVERLAY_MESSAGE_QUEUE.length > 0) {
+        const message = CHAT_OVERLAY_MESSAGE_QUEUE.shift();
+        fragment.appendChild(message);
+      }
+
+      // Append the fragment if it contains any messages
+      if (fragment.childElementCount > 0) {
+        chatOverlayContainer.appendChild(fragment);
+      }
+    }
+
+    // Automatically scroll to the bottom to show the newest message
+    chatOverlayContainer.scrollTop = chatOverlayContainer.scrollHeight;
+  } else {
+    // If auto-scrolling is disabled, queue the incoming message instead
+
+    // Ensure the queue does not exceed 100 messages by removing the oldest one
+    if (CHAT_OVERLAY_MESSAGE_QUEUE.length >= 100) {
+      CHAT_OVERLAY_MESSAGE_QUEUE.shift();
+    }
+
+    // Add the cloned message to the message queue
+    CHAT_OVERLAY_MESSAGE_QUEUE.push(updatedMessages);
+  }
+};
+
+// Store the target WebSocket instance
+let targetWebSocket = null;
+let currentMessageId = 0; 
+
+export const hookWebSocket = () => {
+  console.log("[WebSocket Inspector] Installing hooks...");
+
+  // Store original methods and descriptors
+  const originalSend = WebSocket.prototype.send;
+  const originalAddEventListener = WebSocket.prototype.addEventListener;
+  const originalOnMessageDescriptor = Object.getOwnPropertyDescriptor(WebSocket.prototype, "onmessage");
+
+  // Intercept outgoing messages
+  WebSocket.prototype.send = function (data) {
+    if (!targetWebSocket && this.url.includes("wss://ws.fishtank.live")) {
+      targetWebSocket = this; // Store the reference
+    }
+
+    //Uncomment for debugging.
+    // if (data instanceof ArrayBuffer) {
+    //   try {
+    //     const decoded = decode(data);
+    //     console.log("[WebSocket Inspector] Sent data (Decoded):", decoded);
+    //   } catch (err) {
+    //     console.error("[WebSocket Inspector] Failed to decode outgoing message:", err);
+    //   }
+    // }
+
+    return originalSend.call(this, data);
+  };
+
+  // Intercept addEventListener for incoming messages
+  WebSocket.prototype.addEventListener = function (type, listener, options) {
+    if (type === "message") {
+      const wrappedListener = (event) => {
+        //Un comment for debugging
+        // if (event.data instanceof ArrayBuffer) {
+        //   try {
+        //     const decoded = decode(event.data);
+        //      console.log("[WebSocket Inspector] Incoming message (Decoded):", decoded);
+        //   } catch (err) {
+        //     console.error("[WebSocket Inspector] Failed to decode incoming message:", err);
+        //   }
+        // }
+        listener.call(this, event); // Call the original listener
+      };
+      return originalAddEventListener.call(this, type, wrappedListener, options);
+    }
+
+    return originalAddEventListener.call(this, type, listener, options);
+  };
+
+  // Wrap onmessage to log and pass events correctly
+  Object.defineProperty(WebSocket.prototype, "onmessage", {
+    get: originalOnMessageDescriptor.get,
+    set: function (callback) {
+      const wrappedCallback = (event) => {
+        if (event.data instanceof ArrayBuffer) {
+          interceptIncomingMessages(event);
+        //Uncomment for debugging.
+        //   try {
+        //     const decoded = decode(event.data);
+        //   if (!decoded.type === 2) {
+        //       console.log("[WebSocket Inspector] Incoming message (Decoded):", decoded);
+        //   }
+        //   } catch (err) {
+        //      console.error("[WebSocket Inspector] Failed to decode incoming message:", err);
+        //    }
+         }
+        callback(event); // Pass the event to the original onmessage handler
+      };
+
+      originalOnMessageDescriptor.set.call(this, wrappedCallback);
+    },
+  });
+  console.log("[WebSocket Inspector] Hooks installed successfully.");
+};
+
+export const sendMessage = (type, data, options = {}, nsp = "/") => {
+  const message = {
+      type,
+      data,
+      options,
+      id: currentMessageId, // Use the current ID
+      nsp,
+  };
+
+  console.log(`[WebSocket Inspector] Sending message with ID: ${currentMessageId}`);
+  const encodedBuffer = encode(message); // Encode the message with MessagePack
+  targetWebSocket.send(encodedBuffer); // Send the encoded message
+
+  console.log("[WebSocket Inspector] Message sent:", message);
+};
+
+const interceptIncomingMessages = (event) => {
+  const decoded = decode(event.data); // Decode the incoming message
+
+  // Check if the message is an acknowledgment with type 3
+  if (decoded && decoded.type === 3 && typeof decoded.id === "number") {
+      //console.log(`[WebSocket Inspector] Acknowledgment received for ID: ${decoded.id}`);
+      currentMessageId = decoded.id + 1; // Update the currentMessageId
+      //console.log(`[WebSocket Inspector] Next message ID set to: ${currentMessageId}`);
+  }
+};
+
+export function applyConfigToElement(element, config) {
+  if (!config || typeof config !== 'object') {
+    throw new Error('Invalid config object provided');
+  }
+
+  for (const [key, value] of Object.entries(config)) {
+    if (value === undefined || value === null) continue; // Skip undefined/null properties
+
+    if (key === 'style') {
+      if (typeof value === 'string') {
+        element.style.cssText = value; // Apply styles as a string
+      } else if (typeof value === 'object') {
+        Object.assign(element.style, value); // Apply styles as an object
+      }
+    } else if (key === 'innerHTML') {
+      element.innerHTML = value; // Set innerHTML
+    } else if (key === 'class') {
+      element.className = value; // Handle the 'class' property correctly
+    } else {
+      try {
+        element[key] = value; // Assign other properties
+      } catch (e) {
+        console.warn(`Failed to set property "${key}" on element:`, e);
+      }
+    }
+  }
+}
 
 export const togglePopoutChatButton = (toggle) => {
   const buttonId = "chat-link-button";
@@ -1059,6 +1417,10 @@ export const processChatMessage = (node, logMentions = true) => {
 
   if (logMentions) {
     processMentions(message);
+  }
+
+  if(cfg.enableFullScreenChatOverlay && state.get().isPlayerFullscreen){
+    addMessageToChatOverlay(node);
   }
 
   if (cfg.enableTtsLog && message.type === "tts") {
@@ -1671,7 +2033,8 @@ export const startMaejokTools = async () => {
   togglePopoutChatButton(config.get("enablePopoutChatButton"));
   toggleHiddenItems(config.get("showHiddenItems"));
   toggleTokenConversion(config.get("convertTokenValues"));
-
+  enableChatOverlay(config.get("enableFullScreenChatOverlay"));
+  
   toggleCleanPlayerHeader(
     config.get("enableTimestampOverlay") || config.get("enableUserOverlay")
   );
@@ -1680,6 +2043,7 @@ export const startMaejokTools = async () => {
 
   refactoredObservers.chat.start();
   observers.home.start();
+
 
   if (config.get("enableStreamSearch")) {
     displayStreamSearch();
