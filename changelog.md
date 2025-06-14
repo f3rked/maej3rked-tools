@@ -1,5 +1,21 @@
 # MAEJ3RKED-TOOLS CHANGE LOG
 
+# **_v2.28.6_**
+
+_Release: 06-14-2025_
+
+### Notes
+
+- Tested /chat for more than 2 seconds this time - should be fixed now; the chat observer wasn't properly started.
+
+### Bug Fixes
+
+- Fixed some bugs with plugin functionality on fishtank.live/chat
+
+### Features Added / Changed
+
+- N/A
+
 # **_v2.28.5_**
 
 _Release: 06-14-2025_

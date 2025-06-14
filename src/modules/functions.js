@@ -1664,6 +1664,7 @@ export const startMaejokTools = async () => {
 
   disableSoundEffects(config.get("disableSoundEffects"));
   applySettingsToChat();
+  refactoredObservers.chat.start();
 
   if (isPopoutChat) {
     startEventListeners();
@@ -1683,7 +1684,6 @@ export const startMaejokTools = async () => {
   toggleTimestampOverlay(config.get("enableTimestampOverlay"));
   toggleUserOverlay(config.get("enableUserOverlay"));
 
-  refactoredObservers.chat.start();
   observers.home.start();
 
   if (config.get("enableStreamSearch")) {
