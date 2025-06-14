@@ -85,18 +85,24 @@ export const saveSettings = async () => {
   }
 
   disableSoundEffects(config.get("disableSoundEffects"));
-  applySettingsToChat();
-  toggleScanLines();
-  togglePopoutChatButton(config.get("enablePopoutChatButton"));
-  toggleHiddenItems(config.get("showHiddenItems"));
   toggleDimMode(config.get("enableDimMode"));
-  toggleTokenConversion(config.get("convertTokenValues"));
-  toggleNavigationOverlay(config.get("hideNavigationOverlay"));
-  toggleScreenTakeovers(config.get("hideScreenTakeovers"));
+  applySettingsToChat();
 
-  toggleCleanPlayerHeader(config.get("enableTimestampOverlay") || config.get("enableUserOverlay"));
-  toggleTimestampOverlay(config.get("enableTimestampOverlay"));
-  toggleUserOverlay(config.get("enableUserOverlay"));
+  const isPopoutChat = state.get("isPopoutChat");
+
+  if (!isPopoutChat) {
+    toggleScanLines();
+    togglePopoutChatButton(config.get("enablePopoutChatButton"));
+    toggleHiddenItems(config.get("showHiddenItems"));
+    toggleTokenConversion(config.get("convertTokenValues"));
+    toggleNavigationOverlay(config.get("hideNavigationOverlay"));
+    toggleScreenTakeovers(config.get("hideScreenTakeovers"));
+    toggleCleanPlayerHeader(
+      config.get("enableTimestampOverlay") || config.get("enableUserOverlay")
+    );
+    toggleTimestampOverlay(config.get("enableTimestampOverlay"));
+    toggleUserOverlay(config.get("enableUserOverlay"));
+  }
 
   if (!config.get("enableBigScreen")) {
     toggleBigScreen(false);
@@ -125,6 +131,10 @@ export const saveSettings = async () => {
 
   if (!config.get("enableRecentChatters")) {
     stopRecentChatters();
+  }
+
+  if (isPopoutChat) {
+    return;
   }
 
   const streamSearchJustEnabled =

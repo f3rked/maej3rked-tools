@@ -1657,8 +1657,6 @@ export const startMaejokTools = async () => {
   const cfg = config.get();
   const isPopoutChat = state.get("isPopoutChat");
 
-  toggleLogoHover(true);
-
   if (cfg.enableRecentChatters) {
     startRecentChatters();
     observers.chatters.start();
@@ -1666,6 +1664,13 @@ export const startMaejokTools = async () => {
 
   disableSoundEffects(config.get("disableSoundEffects"));
   applySettingsToChat();
+
+  if (isPopoutChat) {
+    startEventListeners();
+    return;
+  }
+
+  toggleLogoHover(true);
   toggleScanLines();
   toggleScreenTakeovers(config.get("hideScreenTakeovers"));
   togglePopoutChatButton(config.get("enablePopoutChatButton"));
@@ -1715,6 +1720,10 @@ export const startMaejokTools = async () => {
     startUpdater();
   }
 
+  startEventListeners();
+};
+
+const startEventListeners = () => {
   const main = document.querySelector("main");
 
   main.addEventListener("click", leftClick);

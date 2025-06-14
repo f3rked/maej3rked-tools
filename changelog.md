@@ -1,5 +1,21 @@
 # MAEJ3RKED-TOOLS CHANGE LOG
 
+# **_v2.28.5_**
+
+_Release: 06-14-2025_
+
+### Notes
+
+- N/A
+
+### Bug Fixes
+
+- Fixed some bugs with plugin functionality on fishtank.live/chat
+
+### Features Added / Changed
+
+- N/A
+
 # **_v2.28.4_**
 
 _Release: 04-14-2025_
