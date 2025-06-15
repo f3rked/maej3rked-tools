@@ -53,6 +53,8 @@ const Config = () => {
     hideSFXMessages: false,
     hideSystem: false,
     hideFonts: false,
+    hideNonAscii: false,
+    hideSlurSpam: false,
     hideGrayNames: false,
 
     enableImprovedTagging: true,
@@ -626,16 +628,43 @@ const Config = () => {
               },
             },
             // hideFonts
+            // {
+            //   name: "hideFonts",
+            //   label: "Hide Chat Fonts",
+            //   type: "toggle",
+            //   value: cfg.hideFonts,
+            //   group: "hiders",
+            //   help: {
+            //     label: "?",
+            //     text: `<p>Enabling this option hides <strong>Special Chat Fonts</strong>.</p>
+            //     <p>These are the messages in non-standard font.</p>`,
+            //   },
+            // },
+            // hideNonAscii
             {
-              name: "hideFonts",
-              label: "Hide Chat Fonts",
+              name: "hideNonAscii",
+              label: "Hide Non-ASCII Characters",
               type: "toggle",
-              value: cfg.hideFonts,
+              value: cfg.hideNonAscii,
               group: "hiders",
               help: {
                 label: "?",
-                text: `<p>Enabling this option hides <strong>Special Chat Fonts</strong>.</p>
-                <p>These are the messages in non-standard font.</p>`,
+                text: `<p>Enabling this option hides messages containing <strong>Non-ASCII Characters</strong>.</p>
+                <p>This means it will hide messages with foreign characters, emojis, extended ASCII, cursed text, etc.</p>`,
+              },
+            },
+            // hideSlurSpam
+            {
+              name: "hideSlurSpam",
+              label: "Hide Slur Spam",
+              type: "toggle",
+              value: cfg.hideSlurSpam,
+              group: "hiders",
+              help: {
+                label: "?",
+                text: `<p>Enabling this option hides messages containing <strong>Slur Spam</strong>.</p>
+                <p>Slurs are really funny right? Well. Yea.  But it's a bit less funny when it's the entire content and just spam.</p>  
+                <p>Hide messages that are slur spam.  Don't worry I won't tell anyone you're a libcuck soyboy.  If a message contains slurs but has other content (likely hilarious), those will still be shown.</p>`,
               },
             },
             // hideGrayNames

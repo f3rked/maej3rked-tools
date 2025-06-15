@@ -2,6 +2,7 @@ import config from "../modules/config";
 import state from "../modules/state";
 import * as functions from "../modules/functions";
 import ELEMENTS from "../data/elements";
+import { SLUR_SPAM_REGEX, SLUR_SPAM_WORDS } from "../modules/constants";
 
 export default class Message {
   constructor(node) {
@@ -171,6 +172,49 @@ export default class Message {
     const element = this.node.querySelector(selector);
 
     element.classList.toggle(normalize.class, shouldNormalize);
+  }
+
+  hideNonStandardCharacterMessage(hideNonAscii) {
+    if (!hideNonAscii) return;
+
+    if (this.type !== "message") return;
+
+    // Regex: matches any character NOT in the printable ASCII range (space to ~), RIGHT SINGLE QUOTATION MARK, or ZERO WIDTH SPACE
+    const nonStandardCharRegex = /[^\x20-\x7E\u2019\u200B]/;
+
+    const emojiMessage = this.node.querySelector(ELEMENTS.chat.emoji.selector);
+    let nonStandardCharMessage = false;
+    if (this.body && this.body.body) {
+      nonStandardCharMessage = nonStandardCharRegex.test(this.body.body);
+    }
+
+    if (nonStandardCharMessage || emojiMessage) {
+      this.hide();
+    }
+  }
+
+  hideSlurSpamMessage(hideSlurSpam) {
+    if (!hideSlurSpam) return;
+    if (this.type !== "message") return;
+
+    const messageText =
+      this.body && this.body.body ? this.body.body.trim() : "";
+    if (!messageText) return;
+
+    const matches = messageText.match(SLUR_SPAM_REGEX);
+
+    if (!matches) return;
+
+    // If the message is made up of only slurs (possibly repeated, separated by spaces/punctuation)
+    // Split the message into words, filter out empty, and check if every word is a slur
+    const words = messageText
+      .split(/\s+/)
+      .map((w) => w.replace(/[^a-zA-Z0-9]/g, "").toLowerCase())
+      .filter(Boolean);
+    if (words.every((word) => SLUR_SPAM_WORDS.includes(word))) {
+      this.hide();
+      return;
+    }
   }
 
   normalizeFonts(hideFonts) {

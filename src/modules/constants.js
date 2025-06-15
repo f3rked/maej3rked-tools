@@ -76,6 +76,13 @@ export const BAD_WORDS = [
   "bimbo",
 ];
 
+export const SLUR_SPAM_WORDS = [...BAD_WORDS, "faggot", "nig", "retard"];
+
+export const SLUR_SPAM_REGEX = new RegExp(
+  `\\b(${SLUR_SPAM_WORDS.join("|")})\\b`,
+  "gi"
+);
+
 export const DARK_MODE_STYLES = `
 .background_background__fNMDL {
   background: #1c1c1c;
@@ -167,6 +174,9 @@ export const DARK_MODE_STYLES = `
 
 export const SCREEN_TAKEOVERS_STYLES = `
 .happening_happening__Ca2E7,
+.mirror,
+.cyber,
+.blind,
 .happening_backdrop__JCihz,
 .cyber-attack_cyber-attack__hKvrm {
   display: none !important;

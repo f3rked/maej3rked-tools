@@ -330,6 +330,10 @@ const Elements = {
         class: `chat-message-emote_message__HE0id`,
       },
     },
+    emoji: {
+      selector: `[class^="chat-message-default_emoji"]`,
+      class: `chat-message-default_emoji__5sZ1d`,
+    },
     consumable: {
       selector: `[class^="chat-message-happening_chat"]`,
       class: `chat-message-happening_chat-message-happening__tYeDU`,
