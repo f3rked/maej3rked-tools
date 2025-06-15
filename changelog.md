@@ -1,5 +1,22 @@
 # MAEJ3RKED-TOOLS CHANGE LOG
 
+# **_v2.29.0_**
+
+_Release: 06-15-2025_
+
+### Notes
+
+- N/A
+
+### Bug Fixes
+
+- Fixed hide screen takeovers
+
+### Features Added / Changed
+
+- Option to hide messages that are just slur spam
+- Option to hide messages with non-Ascii characters (emojis, cursed text, foreign language characters, etc)
+
 # **_v2.28.6_**
 
 _Release: 06-14-2025_
