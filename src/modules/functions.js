@@ -801,13 +801,7 @@ export const toggleNavigationOverlay = (toggle) => {
 
 export const toggleScreenTakeovers = (toggle) => {
   if (toggle) {
-    const style = document.createElement("style");
-    style.textContent = SCREEN_TAKEOVERS_STYLES;
-    style.setAttribute("id", "maejok-hidescreentakeovers");
-    document.head.appendChild(style);
-  } else {
-    const styles = document.getElementById("maejok-hidescreentakeovers");
-    styles?.remove();
+    document.body.classList.remove("mirror", "cyber", "blind");
   }
 };
 
@@ -1120,7 +1114,8 @@ export const processChatMessage = (node, logMentions = true) => {
     message.normalizeEpic();
     message.normalizeGrand();
 
-    message.normalizeFonts(cfg.hideFonts);
+    message.hideNonStandardCharacterMessage(cfg.hideNonAscii);
+    message.hideSlurSpamMessage(cfg.hideSlurSpam);
 
     message.fixDarkDisplayName();
 
@@ -1665,6 +1660,7 @@ export const startMaejokTools = async () => {
   disableSoundEffects(config.get("disableSoundEffects"));
   applySettingsToChat();
   refactoredObservers.chat.start();
+  toggleScreenTakeovers(config.get("hideScreenTakeovers"));
 
   if (isPopoutChat) {
     startEventListeners();
@@ -1673,7 +1669,6 @@ export const startMaejokTools = async () => {
 
   toggleLogoHover(true);
   toggleScanLines();
-  toggleScreenTakeovers(config.get("hideScreenTakeovers"));
   togglePopoutChatButton(config.get("enablePopoutChatButton"));
   toggleHiddenItems(config.get("showHiddenItems"));
   toggleTokenConversion(config.get("convertTokenValues"));

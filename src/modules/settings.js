@@ -87,6 +87,7 @@ export const saveSettings = async () => {
   disableSoundEffects(config.get("disableSoundEffects"));
   toggleDimMode(config.get("enableDimMode"));
   applySettingsToChat();
+  toggleScreenTakeovers(config.get("hideScreenTakeovers"));
 
   const isPopoutChat = state.get("isPopoutChat");
 
@@ -96,7 +97,6 @@ export const saveSettings = async () => {
     toggleHiddenItems(config.get("showHiddenItems"));
     toggleTokenConversion(config.get("convertTokenValues"));
     toggleNavigationOverlay(config.get("hideNavigationOverlay"));
-    toggleScreenTakeovers(config.get("hideScreenTakeovers"));
     toggleCleanPlayerHeader(
       config.get("enableTimestampOverlay") || config.get("enableUserOverlay")
     );
