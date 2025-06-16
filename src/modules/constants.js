@@ -114,7 +114,6 @@ export const DARK_MODE_STYLES = `
 .top-bar_top-bar___Z0QX{
   filter: brightness(0.5) !important;
   position: relative;
-  z-index: 100;
 }
 
 .episode_episode__oA49f {
