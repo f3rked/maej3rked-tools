@@ -1737,13 +1737,12 @@ export const stopMaejokTools = () => {
   observers.chatters.stop();
   observers.body.stop();
   observers.modal.stop();
-  observers.tokens.stop();
 
   disableSoundEffects(false);
   stopRecentChatters();
   stopUpdater();
   toggleScanLines(false);
-  showHiddenItems(false);
+  toggleHiddenItems(false);
   clearInterval(state.get("updateCheckInterval"));
   clearInterval(state.get("timestampInterval"));
   clearInterval(state.get("daysLeftInterval"));
@@ -1754,9 +1753,16 @@ export const stopMaejokTools = () => {
   const chat = document.querySelector(ELEMENTS.chat.list.selector);
   const home = document.querySelector(ELEMENTS.home.selector);
 
-  home.removeEventListener("click", leftClick);
-  home.removeEventListener("contextmenu", rightClick);
-  chat.removeEventListener("dblclick", dblClick);
+  if (home) {
+    home.removeEventListener("click", leftClick);
+    home.removeEventListener("contextmenu", rightClick);
+    home.removeEventListener("dblclick", dblClick);
+  }
+
+  if (chat) {
+    chat.removeEventListener("dblclick", dblClick);
+  }
+
   document.removeEventListener("keydown", keyPress);
 
   state.set("running", false);
@@ -1927,6 +1933,6 @@ function toggleLogoHover(toggleState) {
     logoHover.classList.add(...logoSelector.hoverImg.classes);
     logo.insertAdjacentElement("afterend", logoHover);
   } else {
-    document.querySelector(logoSelector.hoverImg.selector).remove();
+    document.querySelector(logoSelector.hoverImg.selector)?.remove();
   }
 }
