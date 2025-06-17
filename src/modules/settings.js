@@ -36,6 +36,7 @@ import {
   displayStreamSearch,
   handleOverlays,
   toggleTTSHistoryOverlay,
+  toggleFullscreenButton,
 } from "./functions";
 import {
   start as startRecentChatters,
@@ -99,6 +100,7 @@ export const saveSettings = async () => {
     toggleNavigationOverlay(config.get("hideNavigationOverlay"));
     handleOverlays();
     toggleTTSHistoryOverlay(config.get("enableTTSHistoryOverlay"));
+    toggleFullscreenButton(config.get("enableFullscreenButton"));
   }
 
   if (!config.get("enableBigScreen")) {

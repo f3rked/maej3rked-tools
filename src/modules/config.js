@@ -20,6 +20,7 @@ const Config = () => {
     enableDragModal: false,
     enableTTSFilterWarning: false,
     persistBigScreen: false,
+    enableFullscreenButton: false,
     bigScreenState: false,
     enableBigscreenFill: false,
     enableControlOverlay: false,

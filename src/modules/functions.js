@@ -330,8 +330,6 @@ export const toggleTimestampOverlay = (toggle) => {
     ELEMENTS.livestreams.timestamp.selector
   );
   timestampContainer?.remove();
-  console.log(timestampContainer);
-  console.log(toggle);
 
   if (toggle) {
     displayCurrentTankTime();
@@ -351,7 +349,6 @@ export const toggleTTSHistoryOverlay = (toggle) => {
   const ttsHistory = document.querySelector(
     ELEMENTS.ttsHistory.selector + ":not(.maejok-tts-history-overlay)"
   );
-  console.log(ttsHistory);
   if (toggle) {
     if (!ttsHistory) {
       return;
@@ -390,7 +387,6 @@ export const handleOverlays = (toggle = true) => {
   const cinemaMode = document.querySelector(
     ELEMENTS.livestreams.cinema.selector
   );
-  console.log(cinemaMode);
   if (!toggle || !cinemaMode) {
     toggleCameraNameOverlay(false);
     toggleUserOverlay(false);
@@ -398,8 +394,6 @@ export const handleOverlays = (toggle = true) => {
     toggleTimestampOverlay(false);
     return;
   }
-
-  console.log("handleOverlays");
 
   const controlOverlayEnabled = config.get("enableControlOverlay");
   const timestampOverlayEnabled = config.get("enableTimestampOverlay");
@@ -511,6 +505,18 @@ export const displayCurrentTankTime = () => {
 
   timestampDate.innerHTML = showDay;
   timestampTime.innerHTML = formattedTime;
+};
+
+export const toggleFullscreenButton = (toggle) => {
+  const fullscreenButton = document.querySelector(
+    ELEMENTS.livestreams.controls.fullscreen.selector
+  );
+
+  if (!fullscreenButton) {
+    return;
+  }
+
+  fullscreenButton.classList.toggle("maejok-show-fullscreen", toggle);
 };
 
 export const toggleUserOverlay = (toggle) => {

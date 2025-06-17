@@ -1,7 +1,6 @@
 import state from "./state";
 import config from "./config";
 import {
-  processChatMessage,
   getElementText,
   checkTTSFilteredWords,
   displayStreamSearch,
@@ -13,43 +12,12 @@ import {
   toggleCameraNameOverlay,
   toggleTTSHistoryOverlay,
   handleOverlays,
+  toggleFullscreenButton,
 } from "./functions";
 import ELEMENTS from "../data/elements";
 import { makeDraggable } from "./events";
 
 const observers = {
-  chat: {
-    start: () => {
-      state.get("observers").chat?.disconnect();
-
-      const chat = document.querySelector(ELEMENTS.chat.list.selector);
-
-      const chatObserver = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          if (
-            mutation.type !== "childList" ||
-            mutation.addedNodes.length === 0
-          ) {
-            return;
-          }
-
-          mutation.addedNodes.forEach((addedNode) => {
-            processChatMessage(addedNode);
-          });
-        });
-      });
-
-      chatObserver.observe(chat, { childList: true });
-
-      state.set("observers", { ...state.get("observers"), chat: chatObserver });
-    },
-
-    stop: () => {
-      const observers = state.get("observers");
-      observers.chat?.disconnect();
-    },
-  },
-
   chatters: {
     start: () => {
       state.get("observers").chatters?.disconnect();
@@ -252,7 +220,6 @@ const observers = {
 
             // Cinema mode just activated
             if (!hadCinema && hasCinema) {
-              console.log("cinema mode just activated");
               handleOverlays();
 
               if (playerNameObserver) {
@@ -296,6 +263,15 @@ const observers = {
             mutation.addedNodes.length === 0
           ) {
             return;
+          }
+
+          if (config.get("enableFullscreenButton")) {
+            const selectedStream = document.querySelector(
+              ELEMENTS.livestreams.selected.selector
+            );
+            if (selectedStream) {
+              toggleFullscreenButton(true);
+            }
           }
 
           if (config.get("enableStreamSearch")) {
