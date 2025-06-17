@@ -1,5 +1,24 @@
 # MAEJ3RKED-TOOLS CHANGE LOG
 
+# **_v2.30.0_**
+
+_Release: 06-17-2025_
+
+### Notes
+
+- N/A
+
+### Bug Fixes
+
+- Fixed hide video control overlay
+
+### Features Added / Changed
+
+- Option to fix video player aspect ratio
+- Option to hide/show chat in theater mode
+- Option to show fullscreen button on video player
+- Theater mode options to show tts history, time, camera name, user name
+
 # **_v2.29.0_**
 
 _Release: 06-15-2025_

@@ -381,36 +381,64 @@ const observers = {
       const ttsHistory = document.querySelector(
         ELEMENTS.ttsHistory.selector + ":not(.maejok-tts-history-overlay)"
       );
+      console.log("ttsHistory", ttsHistory);
       if (!ttsHistory) return;
 
-      const marquee = ttsHistory.querySelector("marquee");
-      if (!marquee) return;
+      // Create a mutation observer to watch for the marquee element
+      const marqueeObserver = new MutationObserver((mutations) => {
+        const marquee = ttsHistory.querySelector("marquee");
+        if (marquee) {
+          // Once we find the marquee, stop observing and set up the text observer
+          marqueeObserver.disconnect();
 
-      const textNode = marquee.firstChild;
-      if (!textNode || textNode.nodeType !== Node.TEXT_NODE) return;
+          const textNode = marquee.firstChild;
+          if (!textNode || textNode.nodeType !== Node.TEXT_NODE) return;
 
-      const ttsObserver = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          if (mutation.type === "characterData") {
-            toggleTTSHistoryOverlay(config.get("enableTTSHistoryOverlay"));
-          }
-        });
+          const ttsObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+              if (mutation.type === "characterData") {
+                console.log("new tts message");
+                console.log(mutation);
+                // No SFX or TTS messages sent recently...
+                toggleTTSHistoryOverlay(config.get("enableTTSHistoryOverlay"));
+              }
+            });
+          });
+
+          ttsObserver.observe(textNode, {
+            characterData: true,
+            subtree: false,
+          });
+
+          state.set("observers", {
+            ...state.get("observers"),
+            tts: ttsObserver,
+          });
+        }
       });
 
-      ttsObserver.observe(textNode, {
-        characterData: true,
-        subtree: false,
+      marqueeObserver.observe(ttsHistory, {
+        childList: true,
+        subtree: true,
       });
 
       state.set("observers", {
         ...state.get("observers"),
-        tts: ttsObserver,
+        ttsMarquee: marqueeObserver,
       });
+
+      // Check if marquee already exists
+      const existingMarquee = ttsHistory.querySelector("marquee");
+      if (existingMarquee) {
+        // If marquee exists, trigger the observer callback
+        marqueeObserver?.trigger();
+      }
     },
 
     stop: () => {
       const observers = state.get("observers");
       observers.tts?.disconnect();
+      observers.ttsMarquee?.disconnect();
     },
   },
 };
