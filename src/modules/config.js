@@ -24,6 +24,8 @@ const Config = () => {
     enableBigscreenFill: false,
     enableControlOverlay: false,
     enableTimestampOverlay: false,
+    enableCameraNameOverlay: false,
+    enableTTSHistoryOverlay: false,
     enableUserOverlay: false,
     enableStreamSearch: false,
     controlOverlayDisabled: false,
@@ -108,6 +110,7 @@ const Config = () => {
             { name: "plugin", label: "Plugin Settings" },
             { name: "site-options", label: "Site-wide Options" },
             { name: "video-player-options", label: "Video Player Options" },
+            { name: "theater-mode-options", label: "Theater Mode Options" },
           ],
           inputs: [
             // plugin
@@ -398,7 +401,7 @@ const Config = () => {
             // enableVideoControls
             {
               name: "enableControlOverlay",
-              label: "Enable Video Control Overlay Shortcut",
+              label: "Enable Hide Video Controls Overlay Shortcut",
               type: "toggle",
               value: cfg.enableControlOverlay,
               group: "video-player-options",
@@ -407,31 +410,6 @@ const Config = () => {
                 text: `<p>Enabling this option creates a keyboard shortcut to toggle <strong>the video controls overlay</strong> which will show or hide the overlay.</p>
                   <p><strong><i>It will hide the controls when enabled, but you can show them again by using the shortcut.  You may have to click on the window to regain focus for the shortcut to work.</i></strong></p>
                   <p>Keyboard Shortcut: <strong>CTRL+SHIFT+H</strong></p>`,
-              },
-            },
-            // enableTimestampOverlay
-            {
-              name: "enableTimestampOverlay",
-              label: "Enable Tank Time Overlay ",
-              type: "toggle",
-              value: cfg.enableTimestampOverlay,
-              group: "video-player-options",
-              help: {
-                label: "?",
-                text: `<p>Enabling this option will display a timestamp of the current time in the tank at the top of the video player.</p>`,
-              },
-            },
-            // enableUserOverlay
-            {
-              name: "enableUserOverlay",
-              label: "Enable User Name Overlay",
-              type: "toggle",
-              value: cfg.enableUserOverlay,
-              group: "video-player-options",
-              help: {
-                label: "?",
-                text: `<p><strong>Enabling this option will display your username at at the top of the video player.</strong></p>
-                  <p><i>This is intended to help out clippers if they want to embed credit easily.</i></p>`,
               },
             },
             // enableStreamSearch
@@ -480,6 +458,79 @@ const Config = () => {
               help: {
                 label: "?",
                 text: `<p>Enabling this option will show all hidden items with a green highlight you spoil sport</p>`,
+              },
+            },
+            // enableFullscreenButton
+            {
+              name: "enableFullscreenButton",
+              label: "Enable Fullscreen Button",
+              type: "toggle",
+              value: cfg.enableFullscreenButton,
+              group: "video-player-options",
+              help: {
+                label: "?",
+                text: `<p>Enabling this option will show the fullscreen button in the video player.</p>`,
+              },
+            },
+            // enableTimestampOverlay
+            {
+              name: "enableTimestampOverlay",
+              label: "Enable Tank Time Overlay ",
+              type: "toggle",
+              value: cfg.enableTimestampOverlay,
+              group: "theater-mode-options",
+              help: {
+                label: "?",
+                text: `<p>Enabling this option will display a timestamp of the current time in the tank at the top of the video player when in theater mode.</p>`,
+              },
+            },
+            // enableUserOverlay
+            {
+              name: "enableUserOverlay",
+              label: "Enable User Name Overlay",
+              type: "toggle",
+              value: cfg.enableUserOverlay,
+              group: "theater-mode-options",
+              help: {
+                label: "?",
+                text: `<p><strong>Enabling this option will display your username at the top of the video player when in theater mode.</strong></p>
+                      <p><i>This is intended to help out clippers if they want to embed credit easily.</i></p>`,
+              },
+            },
+            // enableCameraNameOverlay
+            {
+              name: "enableCameraNameOverlay",
+              label: "Enable Camera Name Overlay",
+              type: "toggle",
+              value: cfg.enableCameraNameOverlay,
+              group: "theater-mode-options",
+              help: {
+                label: "?",
+                text: `<p><strong>Enabling this option will display the camera name at the top of the video player when in theater mode.</strong></p>`,
+              },
+            },
+            // disableLogoOverlay
+            {
+              name: "disableLogoOverlay",
+              label: "Disable Logo Overlay",
+              type: "toggle",
+              value: cfg.disableLogoOverlay,
+              group: "theater-mode-options",
+              help: {
+                label: "?",
+                text: `<p><strong>Enabling this option will hide the logo atthe top of the video player when in theater mode.</strong></p>`,
+              },
+            },
+            // enableTTSHistoryOverlay
+            {
+              name: "enableTTSHistoryOverlay",
+              label: "Enable TTS History Overlay",
+              type: "toggle",
+              value: cfg.enableTTSHistoryOverlay,
+              group: "theater-mode-options",
+              help: {
+                label: "?",
+                text: `<p><strong>Enabling this option will display the TTS history overlay at the top of the video player when in theater mode.</strong></p>`,
               },
             },
           ],

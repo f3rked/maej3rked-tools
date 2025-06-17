@@ -4,17 +4,15 @@ import {
   processChatMessage,
   getElementText,
   checkTTSFilteredWords,
-  displayCurrentTankTime,
   displayStreamSearch,
-  displayUserNameOverlay,
-  toggleNavigationOverlay,
   toggleTokenConversion,
-  toggleControlOverlay,
   createEventLogEntry,
   hideToastMessage,
   hideGiftMessage,
   hideStreamSearch,
-  toggleCleanPlayerHeader,
+  toggleCameraNameOverlay,
+  toggleTTSHistoryOverlay,
+  handleOverlays,
 } from "./functions";
 import ELEMENTS from "../data/elements";
 import { makeDraggable } from "./events";
@@ -102,6 +100,8 @@ const observers = {
       const modalSubtreeObserver = (modalNode) => {
         const modalNestedObserver = new MutationObserver((mutations) => {
           mutations.forEach((mutation) => {
+            if (!config.get("convertTokenValues")) return;
+
             mutation.addedNodes.forEach((childNode) => {
               if (childNode.nodeType === Node.ELEMENT_NODE) {
                 if (
@@ -205,8 +205,8 @@ const observers = {
           mutation.removedNodes.forEach((removedNode) => {
             if (removedNode.nodeType === Node.ELEMENT_NODE) {
               if (removedNode.id === "modal") {
-                state.get("observers").modalNestedObserver?.disconnect(); // Disconnect observer when modal closes
-                state.get("observers").modalNestedObserver = null; // Clear reference
+                state.get("observers").modalNestedObserver?.disconnect();
+                state.get("observers").modalNestedObserver = null;
               }
             }
           });
@@ -235,8 +235,62 @@ const observers = {
 
       const mainPanel = document.getElementById("main-panel");
 
+      let playerNameObserver = null;
+
       const mainPanelObserver = new MutationObserver(async (mutations) => {
         mutations.forEach((mutation) => {
+          if (
+            mutation.type === "attributes" &&
+            mutation.attributeName === "class"
+          ) {
+            const target = mutation.target;
+            const cinemaClass = ELEMENTS.livestreams.cinema.class;
+            const hadCinema =
+              mutation.oldValue &&
+              mutation.oldValue.split(" ").includes(cinemaClass);
+            const hasCinema = target.classList?.contains(cinemaClass);
+
+            // Cinema mode just activated
+            if (!hadCinema && hasCinema) {
+              console.log("cinema mode just activated");
+              handleOverlays();
+
+              if (playerNameObserver) {
+                playerNameObserver.disconnect();
+                playerNameObserver = null;
+              }
+
+              const playerNameEl = document.querySelector(
+                `.${ELEMENTS.livestreams.player.header.name.class}`
+              );
+              if (playerNameEl) {
+                playerNameEl.childNodes.forEach((node) => {
+                  if (node.nodeType === Node.TEXT_NODE) {
+                    playerNameObserver = new MutationObserver((mutList) => {
+                      mutList.forEach((mutation) => {
+                        if (mutation.type === "characterData") {
+                          toggleCameraNameOverlay(
+                            config.get("enableCameraNameOverlay")
+                          );
+                        }
+                      });
+                    });
+                    playerNameObserver.observe(node, { characterData: true });
+                  }
+                });
+              }
+            }
+
+            // Cinema mode just deactivated
+            if (hadCinema && !hasCinema) {
+              if (playerNameObserver) {
+                playerNameObserver.disconnect();
+                playerNameObserver = null;
+              }
+              handleOverlays(false);
+            }
+          }
+
           if (
             mutation.type !== "childList" ||
             mutation.addedNodes.length === 0
@@ -260,78 +314,28 @@ const observers = {
           if (!liveStreamContainer) {
             hideStreamSearch();
           }
-
-          const livestreamAdded = mutation.addedNodes[0].classList?.contains(
-            ELEMENTS.livestreams.selected.class
-          );
-
-          const playerControlsAdded =
-            mutation.addedNodes[0].classList?.contains(
-              ELEMENTS.livestreams.status.class
-            );
-
-          if (!livestreamAdded && !playerControlsAdded) {
-            return;
-          }
-
-          hideStreamSearch();
-
-          const controlOverlayEnabled = config.get("enableControlOverlay");
-          const timestampOverlayEnabled = config.get("enableTimestampOverlay");
-          const userOverlayEnabled = config.get("enableUserOverlay");
-          const hideNavigationOverlayEnabled = config.get(
-            "hideNavigationOverlayEnabled"
-          );
-
-          if (
-            !controlOverlayEnabled &&
-            !timestampOverlayEnabled &&
-            !userOverlayEnabled &&
-            !hideNavigationOverlayEnabled
-          ) {
-            return;
-          }
-
-          mutation.addedNodes.forEach((addedNode) => {
-            if (livestreamAdded) {
-              if (timestampOverlayEnabled || userOverlayEnabled) {
-                toggleCleanPlayerHeader(true);
-              }
-              
-              if (timestampOverlayEnabled) {
-                displayCurrentTankTime();
-              }
-
-              if (userOverlayEnabled) {
-                displayUserNameOverlay();
-              }
-
-              if (hideNavigationOverlayEnabled) {
-                toggleNavigationOverlay(true);
-              }
-            }
-
-            if (playerControlsAdded && controlOverlayEnabled) {
-              toggleControlOverlay(state.get("controlOverlayDisabled"));
-            }
-          });
         });
       });
 
       mainPanelObserver.observe(mainPanel, {
         childList: true,
         subtree: true,
+        attributes: true,
+        attributeFilter: ["class"],
+        attributeOldValue: true,
       });
 
       state.set("observers", {
         ...state.get("observers"),
         home: mainPanelObserver,
+        playerName: playerNameObserver,
       });
     },
 
     stop: () => {
       const observers = state.get("observers");
       observers.home?.disconnect();
+      observers.playerName?.disconnect();
     },
   },
 
@@ -387,6 +391,45 @@ const observers = {
     stop: () => {
       const observers = state.get("observers");
       observers.body?.disconnect();
+    },
+  },
+  tts: {
+    start: () => {
+      state.get("observers").tts?.disconnect();
+
+      const ttsHistory = document.querySelector(
+        ELEMENTS.ttsHistory.selector + ":not(.maejok-tts-history-overlay)"
+      );
+      if (!ttsHistory) return;
+
+      const marquee = ttsHistory.querySelector("marquee");
+      if (!marquee) return;
+
+      const textNode = marquee.firstChild;
+      if (!textNode || textNode.nodeType !== Node.TEXT_NODE) return;
+
+      const ttsObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === "characterData") {
+            toggleTTSHistoryOverlay(config.get("enableTTSHistoryOverlay"));
+          }
+        });
+      });
+
+      ttsObserver.observe(textNode, {
+        characterData: true,
+        subtree: false,
+      });
+
+      state.set("observers", {
+        ...state.get("observers"),
+        tts: ttsObserver,
+      });
+    },
+
+    stop: () => {
+      const observers = state.get("observers");
+      observers.tts?.disconnect();
     },
   },
 };

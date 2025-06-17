@@ -295,33 +295,12 @@ export const toggleControlOverlay = (force) => {
   const liveStreamContainer = document.querySelector(
     ELEMENTS.livestreams.selector
   );
-  const volumeControls = liveStreamContainer.querySelector(
-    ELEMENTS.livestreams.volume.selector
-  );
-  const qualityControl = liveStreamContainer.querySelector(
-    ELEMENTS.livestreams.quality.selector
-  );
-  const fullscreenControl = liveStreamContainer.querySelector(
-    ELEMENTS.livestreams.fullscreen.selector
-  );
-  const clipControl = liveStreamContainer.querySelector(
-    ELEMENTS.livestreams.clip.selector
-  );
+  if (!liveStreamContainer) return;
 
-  const controls = [
-    volumeControls,
-    qualityControl,
-    fullscreenControl,
-    clipControl,
-  ];
-
-  if (!config.get("enableControlOverlay")) {
-    controls.forEach((control) => {
-      control?.classList.remove("maejok-hide");
-    });
-
-    return;
-  }
+  const controlsConfig = ELEMENTS.livestreams.controls;
+  const controls = Object.values(controlsConfig)
+    .map((cfg) => liveStreamContainer.querySelector(cfg.selector))
+    .filter(Boolean);
 
   let disabled;
   if (force !== undefined) {
@@ -329,7 +308,7 @@ export const toggleControlOverlay = (force) => {
     state.set("controlOverlayDisabled", force);
   }
 
-  const controlsNotPresent = controls.some((control) => !control);
+  const controlsNotPresent = controls.length === 0;
   if (controlsNotPresent) {
     return;
   }
@@ -339,23 +318,20 @@ export const toggleControlOverlay = (force) => {
     state.set("controlOverlayDisabled", !disabled);
   }
 
-  if (disabled) {
-    controls.forEach((control) => {
-      control.classList.remove("maejok-hide");
-    });
-  } else {
-    controls.forEach((control) => {
-      control.classList.add("maejok-hide");
-    });
-  }
+  controls.forEach((control) => {
+    control.classList.toggle("maejok-hide", !disabled);
+  });
 };
 
 export const toggleTimestampOverlay = (toggle) => {
   clearInterval(state.get("timestampInterval"));
+
   const timestampContainer = document.querySelector(
     ELEMENTS.livestreams.timestamp.selector
   );
   timestampContainer?.remove();
+  console.log(timestampContainer);
+  console.log(toggle);
 
   if (toggle) {
     displayCurrentTankTime();
@@ -364,23 +340,138 @@ export const toggleTimestampOverlay = (toggle) => {
   }
 };
 
-export const displayCurrentTankTime = (playerHeader) => {
-  const playerHeaderElement =
-    playerHeader ||
-    document.querySelector(ELEMENTS.livestreams.player.header.selector);
-
-  if (!playerHeaderElement) {
+export const toggleTTSHistoryOverlay = (toggle) => {
+  const cinemaMode = document.querySelector(
+    ELEMENTS.livestreams.cinema.selector
+  );
+  if (!cinemaMode) {
     return;
   }
 
-  const navigationElement = playerHeaderElement.querySelector(
-    ELEMENTS.livestreams.player.header.navigation.selector
+  const ttsHistory = document.querySelector(
+    ELEMENTS.ttsHistory.selector + ":not(.maejok-tts-history-overlay)"
+  );
+  console.log(ttsHistory);
+  if (toggle) {
+    if (!ttsHistory) {
+      return;
+    }
+
+    const ttsHistoryOverlay = document.querySelector(
+      ELEMENTS.ttsHistoryOverlay.selector
+    );
+    ttsHistoryOverlay?.remove();
+    createTTSHistoryOverlay(ttsHistory);
+  } else {
+    observers.tts.stop();
+    const ttsHistoryOverlay = document.querySelector(
+      ELEMENTS.ttsHistoryOverlay.selector
+    );
+    ttsHistoryOverlay?.remove();
+  }
+};
+
+const createTTSHistoryOverlay = (ttsHistory) => {
+  const ttsHistoryOverlayContainer = document.createElement("div");
+  ttsHistoryOverlayContainer.classList.add(
+    ELEMENTS.ttsHistoryOverlayContainer.class
+  );
+  const ttsHistoryOverlay = document.createElement("div");
+  ttsHistoryOverlay.innerHTML = ttsHistory.outerHTML;
+  ttsHistoryOverlayContainer.appendChild(ttsHistoryOverlay);
+  const newTTSHistory = ttsHistoryOverlay.querySelector(
+    ELEMENTS.ttsHistory.message.selector
+  );
+  newTTSHistory.classList.add(ELEMENTS.ttsHistoryOverlay.class);
+  document.body.appendChild(ttsHistoryOverlayContainer);
+};
+
+export const handleOverlays = (toggle = true) => {
+  const cinemaMode = document.querySelector(
+    ELEMENTS.livestreams.cinema.selector
+  );
+  console.log(cinemaMode);
+  if (!toggle || !cinemaMode) {
+    toggleCameraNameOverlay(false);
+    toggleUserOverlay(false);
+    toggleLogoOverlay(false);
+    toggleTimestampOverlay(false);
+    return;
+  }
+
+  console.log("handleOverlays");
+
+  const controlOverlayEnabled = config.get("enableControlOverlay");
+  const timestampOverlayEnabled = config.get("enableTimestampOverlay");
+  const userOverlayEnabled = config.get("enableUserOverlay");
+  const hideNavigationOverlayEnabled = config.get(
+    "hideNavigationOverlayEnabled"
+  );
+  const cameraNameOverlayEnabled = config.get("enableCameraNameOverlay");
+  const logoOverlayEnabled = config.get("disableLogoOverlay");
+  const ttsHistoryOverlayEnabled = config.get("enableTTSHistoryOverlay");
+
+  if (
+    !controlOverlayEnabled &&
+    !timestampOverlayEnabled &&
+    !userOverlayEnabled &&
+    !hideNavigationOverlayEnabled &&
+    !cameraNameOverlayEnabled &&
+    !logoOverlayEnabled &&
+    !ttsHistoryOverlayEnabled
+  ) {
+    return;
+  }
+
+  toggleTimestampOverlay(timestampOverlayEnabled);
+  toggleUserOverlay(userOverlayEnabled);
+  toggleCameraNameOverlay(cameraNameOverlayEnabled);
+  toggleNavigationOverlay(hideNavigationOverlayEnabled);
+  toggleLogoOverlay(logoOverlayEnabled);
+  toggleTTSHistoryOverlay(ttsHistoryOverlayEnabled);
+  toggleControlOverlay(state.get("controlOverlayDisabled"));
+};
+
+export const toggleLogoOverlay = (toggle) => {
+  const logoOverlay = document.querySelector(ELEMENTS.header.logo.selector);
+  if (!logoOverlay) {
+    return;
+  }
+  logoOverlay.classList.toggle("maejok-hide", toggle);
+};
+
+export const toggleCameraNameOverlay = (toggle) => {
+  const cameraOverlay = document.querySelector(
+    ELEMENTS.livestreams.cameraName.selector
   );
 
-  if (!navigationElement) {
+  if (!toggle) {
+    cameraOverlay?.remove();
     return;
   }
 
+  const cameraName = document.querySelector(
+    ELEMENTS.livestreams.player.header.name.selector
+  )?.textContent;
+
+  if (!cameraName) {
+    return;
+  }
+  changeCameraName(cameraName, cameraOverlay);
+};
+
+const changeCameraName = (name, cameraOverlay) => {
+  if (cameraOverlay) {
+    cameraOverlay.textContent = name;
+  } else {
+    const cameraNameContainer = document.createElement("div");
+    cameraNameContainer.classList.add(ELEMENTS.livestreams.cameraName.class);
+    cameraNameContainer.textContent = name;
+    document.body.appendChild(cameraNameContainer);
+  }
+};
+
+export const displayCurrentTankTime = () => {
   const timestampElement = ELEMENTS.livestreams.timestamp;
   const timestampContainer = document.querySelector(timestampElement.selector);
 
@@ -404,7 +495,7 @@ export const displayCurrentTankTime = (playerHeader) => {
     timestampTime.classList.add(timestampElement.time.class);
     targetElement.appendChild(timestampDate);
     targetElement.appendChild(timestampTime);
-    navigationElement.insertAdjacentElement("afterend", targetElement);
+    document.body.appendChild(targetElement);
   }
 
   const d = new Date();
@@ -447,20 +538,12 @@ export const toggleUserOverlay = (toggle) => {
   }
 };
 
-export const displayUserNameOverlay = (playerHeader) => {
-  const playerHeaderElement =
-    playerHeader ||
-    document.querySelector(ELEMENTS.livestreams.player.header.selector);
-
-  if (!playerHeaderElement) {
-    return;
-  }
-
-  const navigationElement = playerHeaderElement.querySelector(
-    ELEMENTS.livestreams.player.header.navigation.selector
+export const displayUserNameOverlay = () => {
+  const userOverlay = document.querySelector(
+    ELEMENTS.livestreams.overlay.selector
   );
 
-  if (!navigationElement) {
+  if (userOverlay) {
     return;
   }
 
@@ -468,7 +551,7 @@ export const displayUserNameOverlay = (playerHeader) => {
   const userOverlayContainer = document.createElement("div");
   userOverlayContainer.classList.add(ELEMENTS.livestreams.overlay.class);
   userOverlayContainer.innerHTML = userOverlayHTML;
-  navigationElement.insertAdjacentElement("afterend", userOverlayContainer);
+  document.body.appendChild(userOverlayContainer);
 };
 
 /**
@@ -925,7 +1008,7 @@ export const getSender = function (messageElement, messageType) {
 
   const senderText =
     messageType === "message"
-      ? senderElement.lastChild.textContent
+      ? senderElement.lastChild?.textContent
       : getElementText(senderElement);
 
   return senderText;
@@ -1673,12 +1756,6 @@ export const startMaejokTools = async () => {
   toggleHiddenItems(config.get("showHiddenItems"));
   toggleTokenConversion(config.get("convertTokenValues"));
 
-  toggleCleanPlayerHeader(
-    config.get("enableTimestampOverlay") || config.get("enableUserOverlay")
-  );
-  toggleTimestampOverlay(config.get("enableTimestampOverlay"));
-  toggleUserOverlay(config.get("enableUserOverlay"));
-
   observers.home.start();
 
   if (config.get("enableStreamSearch")) {
@@ -1699,6 +1776,10 @@ export const startMaejokTools = async () => {
 
   if (config.get("enableEventsLog") || config.get("hideGiftedPassMessage")) {
     observers.modal.start();
+  }
+
+  if (config.get("enableTTSHistoryOverlay")) {
+    observers.tts.start();
   }
 
   const user = state.get("user");

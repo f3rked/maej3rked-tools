@@ -28,7 +28,6 @@
   //background-color: "#fff";
   padding: "5px";
   border: "1px solid #ccc";
-
 }
 
 .maejok-search-container input[type="text"] {
@@ -81,13 +80,16 @@
 }
 
 .maejok-user-overlay {
-  margin-right: auto;
   display: flex;
-  background-color: rgba(0, 0, 0, .5);
+  background-color: rgba(0, 0, 0, 0.5);
   font-size: 12px;
-  padding: 4px;
+  padding: 5px;
   align-items: center;
-  line-height:10px;
+  line-height: 10px;
+  position: absolute;
+  top: 0;
+  right: 400px;
+  z-index: 100;
 }
 
 .maejok-user-overlay-clan {
@@ -106,7 +108,6 @@
   padding-right: unset;
   padding-bottom: unset;
   padding-left: unset;
-  cursor: pointer;
   padding: 2px;
   margin-right: 4px;
   border-radius: 2px;
@@ -123,19 +124,42 @@
 
 .maejok-timestamp-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 2px;
-  background-color: rgba(0, 0, 0, .5);
+  gap: 5px;
+  padding: 5px;
+  background-color: rgba(0, 0, 0, 0.5);
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #00FF00; /* Adjust color as needed */
+  left: 40vw;
+  top: 0;
+  color: #00ff00;
   text-align: center;
   white-space: nowrap;
   line-height: 12px;
+  z-index: 100;
+}
+
+.maejok-tts-history-overlay-container {
+  position: absolute;
+  left: 27vw;
+  bottom: 0;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.5);
+  max-width: 30vw;
+}
+
+.maejok-camera-name-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 5px;
+  text-align: center;
+  white-space: nowrap;
+  line-height: 10px;
+  z-index: 100;
 }
 
 .maejok-timestamp-day {
@@ -143,7 +167,7 @@
   font-size: 13px;
   text-transform: uppercase;
   color: #28d97f;
-  text-shadow: 2px 2px 0 rgba(27, 154, 89, .25);
+  text-shadow: 2px 2px 0 rgba(27, 154, 89, 0.25);
   letter-spacing: -1.5px;
 }
 
@@ -177,7 +201,7 @@
   cursor: pointer;
 }
 
-#maejok-chatters_online-presence-id{
+#maejok-chatters_online-presence-id {
   display: none !important;
 }
 
@@ -203,12 +227,11 @@
   bottom: 0;
   object-fit: contain;
   opacity: 0;
-  transition: opacity .5s;
+  transition: opacity 0.5s;
 }
 .maejok-logo_hover:hover {
   opacity: 1;
 }
-
 
 .button-link:focus,
 .button-link:hover,

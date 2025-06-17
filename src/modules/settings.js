@@ -27,16 +27,15 @@ import {
   toggleScanLines,
   toggleHiddenItems,
   toggleScreenTakeovers,
-  toggleTimestampOverlay,
   toggleTokenConversion,
   togglePopoutChatButton,
   toggleNavigationOverlay,
-  toggleUserOverlay,
   keyEventToString,
   toggleControlOverlay,
   hideStreamSearch,
   displayStreamSearch,
-  toggleCleanPlayerHeader,
+  handleOverlays,
+  toggleTTSHistoryOverlay,
 } from "./functions";
 import {
   start as startRecentChatters,
@@ -60,6 +59,7 @@ export const saveSettings = async () => {
   const prevTTSFilter = config.get("enableTTSFilterWarning");
   const prevControlOverlay = config.get("enableControlOverlay");
   const prevStreamSearch = config.get("enableStreamSearch");
+  const prevTTSHistoryOverlay = config.get("enableTTSHistoryOverlay");
 
   inputs.forEach((input) => {
     const key = input.id.replace("-hidden", "");
@@ -97,11 +97,8 @@ export const saveSettings = async () => {
     toggleHiddenItems(config.get("showHiddenItems"));
     toggleTokenConversion(config.get("convertTokenValues"));
     toggleNavigationOverlay(config.get("hideNavigationOverlay"));
-    toggleCleanPlayerHeader(
-      config.get("enableTimestampOverlay") || config.get("enableUserOverlay")
-    );
-    toggleTimestampOverlay(config.get("enableTimestampOverlay"));
-    toggleUserOverlay(config.get("enableUserOverlay"));
+    handleOverlays();
+    toggleTTSHistoryOverlay(config.get("enableTTSHistoryOverlay"));
   }
 
   if (!config.get("enableBigScreen")) {
@@ -182,6 +179,8 @@ export const saveSettings = async () => {
     prevEventLog !== config.get("enableEventsLog");
   const controlOverlayJustChanged =
     prevControlOverlay !== config.get("enableControlOverlay");
+  const ttsHistoryOverlayJustChanged =
+    prevTTSHistoryOverlay !== config.get("enableTTSHistoryOverlay");
 
   if (
     hideGlobalMissionsJustEnabled ||
@@ -198,6 +197,10 @@ export const saveSettings = async () => {
 
   if (controlOverlayJustChanged) {
     toggleControlOverlay(config.get("enableControlOverlay"));
+  }
+
+  if (ttsHistoryOverlayJustChanged) {
+    observers.tts.start();
   }
 
   scrollToBottom();

@@ -21,6 +21,7 @@ import {
   inputIsFocused,
   keyEventToString,
   toggleNontentOverlay,
+  toggleCameraNameOverlay,
 } from "./functions";
 import * as settings from "./settings";
 import * as menu from "./menu";
