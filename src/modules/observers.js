@@ -13,6 +13,7 @@ import {
   toggleTTSHistoryOverlay,
   handleOverlays,
   toggleFullscreenButton,
+  toggleVideoAspectRatioFix,
 } from "./functions";
 import ELEMENTS from "../data/elements";
 import { makeDraggable } from "./events";
@@ -272,6 +273,10 @@ const observers = {
             if (selectedStream) {
               toggleFullscreenButton(true);
             }
+          }
+
+          if (config.get("enableVideoAspectRatioFix")) {
+            toggleVideoAspectRatioFix(true);
           }
 
           if (config.get("enableStreamSearch")) {

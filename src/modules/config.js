@@ -23,6 +23,7 @@ const Config = () => {
     enableFullscreenButton: false,
     bigScreenState: false,
     enableBigscreenFill: false,
+    enableVideoAspectRatioFix: false,
     enableControlOverlay: false,
     enableTimestampOverlay: false,
     enableCameraNameOverlay: false,
@@ -398,6 +399,19 @@ const Config = () => {
                 label: "?",
                 text: `<p>Enabling this option will cause <strong>bigscreen mode video player to fill the whole screen.</strong></p>
                   <p><i>This is how the video player worked before a recent site update.  It does slightly stretch the image, but in my opinion it's hard to tell unless you're being really autistic about it.</i></p>`,
+              },
+            },
+            // enableVideoAspectRatioFix
+            {
+              name: "enableVideoAspectRatioFix",
+              label: "Enable Video Aspect Ratio Fix",
+              type: "toggle",
+              value: cfg.enableVideoAspectRatioFix,
+              group: "video-player-options",
+              help: {
+                label: "?",
+                text: `<p>Enabling this option will cause <strong>the video player to respect aspect ratio.</strong></p>
+                  <p><i>Currently without this, the player will stretch the video image to fill the screen which can cause distortion.</i></p>`,
               },
             },
             // enableVideoControls

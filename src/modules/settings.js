@@ -37,6 +37,7 @@ import {
   handleOverlays,
   toggleTTSHistoryOverlay,
   toggleFullscreenButton,
+  toggleVideoAspectRatioFix,
 } from "./functions";
 import {
   start as startRecentChatters,
@@ -101,6 +102,7 @@ export const saveSettings = async () => {
     handleOverlays();
     toggleTTSHistoryOverlay(config.get("enableTTSHistoryOverlay"));
     toggleFullscreenButton(config.get("enableFullscreenButton"));
+    toggleVideoAspectRatioFix(config.get("enableVideoAspectRatioFix"));
   }
 
   if (!config.get("enableBigScreen")) {

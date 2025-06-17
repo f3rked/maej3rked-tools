@@ -1487,6 +1487,16 @@ export const hideToastMessage = (toast) => {
   }
 };
 
+export const toggleVideoAspectRatioFix = (toggle) => {
+  const videoPlayer = document.querySelector(
+    ELEMENTS.livestreams.player.video.selector
+  );
+  videoPlayer?.classList.toggle(
+    ELEMENTS.livestreams.player.aspectRatioFix.class,
+    toggle
+  );
+};
+
 export const hideInitialModal = () => {
   const initialModal = document.querySelector(
     ".live-streams-auditions_live-streams-auditions__sRcSq"

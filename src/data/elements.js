@@ -59,6 +59,14 @@ const Elements = {
           class: "live-stream-player_name__nhgrA",
         },
       },
+      video: {
+        selector: `[class*="hls-stream-player_hls-stream-player__"]`,
+        class: "hls-stream-player_hls-stream-player__BJiGl",
+      },
+      aspectRatioFix: {
+        selector: `[class*="maejok-aspect-ratio-fix"]`,
+        class: "maejok-aspect-ratio-fix",
+      },
     },
     selected: {
       selector: `[class^="live-streams_selected-live-stream"]`,
