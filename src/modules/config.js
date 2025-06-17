@@ -27,6 +27,7 @@ const Config = () => {
     enableTimestampOverlay: false,
     enableCameraNameOverlay: false,
     enableTTSHistoryOverlay: false,
+    enableHideChatButton: false,
     enableUserOverlay: false,
     enableStreamSearch: false,
     controlOverlayDisabled: false,
@@ -532,6 +533,18 @@ const Config = () => {
               help: {
                 label: "?",
                 text: `<p><strong>Enabling this option will display the TTS history overlay at the top of the video player when in theater mode.</strong></p>`,
+              },
+            },
+            // enableHideChatButton
+            {
+              name: "enableHideChatButton",
+              label: "Enable Hide Chat Button",
+              type: "toggle",
+              value: cfg.enableHideChatButton,
+              group: "theater-mode-options",
+              help: {
+                label: "?",
+                text: `<p><strong>Enabling this option will display a hide chat button at the top of chat when in theater mode.</strong></p>`,
               },
             },
           ],

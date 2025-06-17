@@ -807,6 +807,14 @@ const Elements = {
       classes: "item-generator-modal_cost__XJRS_",
     },
   },
+  closeChatButton: {
+    selector: `[class*="maejok-hide-chat-button"]`,
+    class: "maejok-hide-chat-button",
+  },
+  openChatButton: {
+    selector: `[class*="maejok-show-chat-button"]`,
+    class: "maejok-show-chat-button",
+  },
 };
 
 export default Elements;

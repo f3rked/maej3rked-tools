@@ -4,13 +4,13 @@ import {
   VERSION,
   SOUNDS,
   DARK_MODE_STYLES,
-  SCREEN_TAKEOVERS_STYLES,
   BAD_WORDS,
   BIG_SCREEN_STYLES_ONLINE,
   BIG_SCREEN_STYLES_OFFLINE,
   BIGSCREEN_STRETCH_STYLES,
   DEFAULT_KEYBINDS,
   REPO_URL_ROOT,
+  CLOSE_SVG,
 } from "./constants";
 import Message from "../classes/Message";
 import ELEMENTS from "../data/elements";
@@ -376,10 +376,10 @@ const createTTSHistoryOverlay = (ttsHistory) => {
   const ttsHistoryOverlay = document.createElement("div");
   ttsHistoryOverlay.innerHTML = ttsHistory.outerHTML;
   ttsHistoryOverlayContainer.appendChild(ttsHistoryOverlay);
-  const newTTSHistory = ttsHistoryOverlay.querySelector(
+  const newTTSHistory = ttsHistoryOverlayContainer.querySelector(
     ELEMENTS.ttsHistory.message.selector
   );
-  newTTSHistory.classList.add(ELEMENTS.ttsHistoryOverlay.class);
+  newTTSHistory?.classList.add(ELEMENTS.ttsHistoryOverlay.class);
   document.body.appendChild(ttsHistoryOverlayContainer);
 };
 
@@ -404,6 +404,7 @@ export const handleOverlays = (toggle = true) => {
   const cameraNameOverlayEnabled = config.get("enableCameraNameOverlay");
   const logoOverlayEnabled = config.get("disableLogoOverlay");
   const ttsHistoryOverlayEnabled = config.get("enableTTSHistoryOverlay");
+  const hideChatButtonEnabled = config.get("enableHideChatButton");
 
   if (
     !controlOverlayEnabled &&
@@ -412,7 +413,8 @@ export const handleOverlays = (toggle = true) => {
     !hideNavigationOverlayEnabled &&
     !cameraNameOverlayEnabled &&
     !logoOverlayEnabled &&
-    !ttsHistoryOverlayEnabled
+    !ttsHistoryOverlayEnabled &&
+    !hideChatButtonEnabled
   ) {
     return;
   }
@@ -424,6 +426,7 @@ export const handleOverlays = (toggle = true) => {
   toggleLogoOverlay(logoOverlayEnabled);
   toggleTTSHistoryOverlay(ttsHistoryOverlayEnabled);
   toggleControlOverlay(state.get("controlOverlayDisabled"));
+  toggleHideChatButton(hideChatButtonEnabled);
 };
 
 export const toggleLogoOverlay = (toggle) => {
@@ -560,52 +563,66 @@ export const displayUserNameOverlay = () => {
   document.body.appendChild(userOverlayContainer);
 };
 
-/**
- * Toggles the visibility of elements in the video player header
- * Keeps navigation and close buttons visible, hides or shows all other elements
- * @param {boolean} [toggle=true] - If true, hides all elements except navigation and close buttons
- * @returns {HTMLElement|null} The header element or null if not found
- */
-export const toggleCleanPlayerHeader = (toggle = true) => {
-  const playerHeader = document.querySelector(
-    ELEMENTS.livestreams.player.header.selector
-  );
-
-  if (!playerHeader) {
-    return null;
+export const toggleHideChatButton = (toggle) => {
+  const chatHeader = document.querySelector(ELEMENTS.chat.header.selector);
+  if (!chatHeader) {
+    return;
   }
 
-  // Define selectors for elements we want to keep visible
-  const keepVisibleSelectors = [
-    ELEMENTS.livestreams.player.header.navigation.selector,
-    ELEMENTS.livestreams.player.header.close.selector,
-    ELEMENTS.livestreams.overlay.selector,
-    ELEMENTS.livestreams.timestamp.selector,
-    ELEMENTS.livestreams.player.header.name.selector,
-    ELEMENTS.livestreams.viewers.selector,
-  ];
+  const chatButton = document.querySelector(ELEMENTS.closeChatButton.selector);
 
-  // Find elements to keep visible
-  const elementsToKeepVisible = keepVisibleSelectors
-    .map((selector) => playerHeader.querySelector(selector))
-    .filter(Boolean); // Filter out any null elements
+  if (toggle) {
+    if (chatButton) return;
 
-  // Get all children of the header
-  const children = Array.from(playerHeader.children);
+    const closeButton = document.createElement("button");
+    closeButton.classList.add(...ELEMENTS.modal.close.button.classes);
+    closeButton.classList.add(ELEMENTS.closeChatButton.class);
+    closeButton.addEventListener("click", () => toggleChat());
 
-  // Toggle the maejok-hide class on all elements except those in the keepVisible array
-  children.forEach((child) => {
-    if (!elementsToKeepVisible.includes(child)) {
-      child.classList.toggle("maejok-hide", toggle);
-    }
-  });
+    const closeButtonIcon = document.createElement("div");
+    closeButtonIcon.classList.add(ELEMENTS.modal.close.icon.class);
+    closeButtonIcon.innerHTML = CLOSE_SVG;
 
-  const viewers = playerHeader.querySelector(
-    ELEMENTS.livestreams.viewers.selector
-  );
-  viewers?.classList.toggle("maejok-viewers-fix", toggle);
+    closeButton.appendChild(closeButtonIcon);
+    chatHeader.appendChild(closeButton);
+  } else {
+    const openChatButton = document.querySelector(
+      ELEMENTS.openChatButton.selector
+    );
+    chatButton?.remove();
+    openChatButton?.remove();
+  }
+};
 
-  return playerHeader;
+const toggleChat = () => {
+  const chat = document.querySelector(ELEMENTS.chat.main.selector);
+  if (!chat) {
+    return;
+  }
+
+  const isHidden = chat.classList.contains("maejok-hide");
+  chat.classList.toggle("maejok-hide", !isHidden);
+
+  if (!isHidden) {
+    const showChatButton = document.createElement("button");
+    showChatButton.classList.add(...ELEMENTS.modal.close.button.classes);
+    showChatButton.classList.add(ELEMENTS.openChatButton.class);
+    showChatButton.addEventListener("click", () => toggleChat());
+
+    const showChatButtonIcon = document.createElement("div");
+    showChatButtonIcon.classList.add(ELEMENTS.modal.close.icon.class);
+    showChatButtonIcon.innerHTML = CLOSE_SVG;
+    console.log("showing chat button");
+
+    showChatButton.appendChild(showChatButtonIcon);
+    document.body.appendChild(showChatButton);
+  } else {
+    const showChatButton = document.querySelector(
+      ELEMENTS.openChatButton.selector
+    );
+    console.log("showChatButton", showChatButton);
+    showChatButton?.remove();
+  }
 };
 
 export const toggleTokenConversion = (toggle) => {

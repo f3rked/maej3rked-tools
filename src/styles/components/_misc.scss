@@ -148,6 +148,7 @@
   z-index: 100;
   background-color: rgba(0, 0, 0, 0.5);
   max-width: 30vw;
+  min-width: 30vw;
 }
 
 .maejok-camera-name-overlay {
@@ -199,6 +200,48 @@
 
 .maejok-close-button-fix {
   margin-left: auto !important;
+}
+
+.maejok-hide-chat-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+  color: #ffffff;
+  transition: color 0.2s ease;
+  margin-left: 5px;
+  padding-bottom: 1px;
+
+  &:hover {
+    color: #f8ec94;
+  }
+
+  .icon_icon__bDzMA {
+    width: 24px;
+    height: 24px;
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.maejok-aspect-ratio-fix {
+  aspect-ratio: 16/9 !important;
+  object-fit: contain !important;
+}
+
+.maejok-show-chat-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  transform: rotate(45deg);
+  z-index: 100;
+}
+
+.chat_chat__2rdNg.maejok-hide {
+  display: none;
 }
 
 .maejok-chatters_presence-container {
