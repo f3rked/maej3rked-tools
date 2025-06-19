@@ -233,6 +233,57 @@
   width: auto !important;
 }
 
+.maejok-camera-monitor-list {
+  display: flex;
+  flex-direction: column;
+  background: #18191c;
+  padding: 0 0 8px 0;
+}
+.maejok-camera-monitor-header {
+  color: #f8ec94;
+  background: #a00;
+  font-weight: bold;
+  padding: 6px 10px;
+  font-size: 15px;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #222;
+}
+.maejok-camera-monitor-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 5px;
+  font-size: 13px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #232323;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.maejok-camera-monitor-row:hover {
+  background: #232323;
+}
+.maejok-camera-monitor-selected {
+  background: #2a2323 !important;
+  color: #e74c3c !important;
+}
+.maejok-cam-icon {
+  color: #e74c3c;
+  font-size: 16px;
+  margin-right: 4px;
+}
+
+.maejok-cam-name {
+  font-weight: 600;
+  margin-left: 8px;
+  flex: 1;
+  text-align: left;
+}
+
+.maejok-panel-subtitle {
+  font-size: 12px !important;
+}
+
 .maejok-show-chat-button {
   position: absolute;
   top: 10px;

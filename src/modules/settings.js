@@ -38,6 +38,7 @@ import {
   toggleTTSHistoryOverlay,
   toggleFullscreenButton,
   toggleVideoAspectRatioFix,
+  toggleCameraMonitor,
 } from "./functions";
 import {
   start as startRecentChatters,
@@ -62,6 +63,7 @@ export const saveSettings = async () => {
   const prevControlOverlay = config.get("enableControlOverlay");
   const prevStreamSearch = config.get("enableStreamSearch");
   const prevTTSHistoryOverlay = config.get("enableTTSHistoryOverlay");
+  const prevCameraMonitor = config.get("enableCameraMonitor");
 
   inputs.forEach((input) => {
     const key = input.id.replace("-hidden", "");
@@ -103,6 +105,7 @@ export const saveSettings = async () => {
     toggleTTSHistoryOverlay(config.get("enableTTSHistoryOverlay"));
     toggleFullscreenButton(config.get("enableFullscreenButton"));
     toggleVideoAspectRatioFix(config.get("enableVideoAspectRatioFix"));
+    toggleCameraMonitor(config.get("enableCameraMonitor"));
   }
 
   if (!config.get("enableBigScreen")) {
@@ -185,6 +188,8 @@ export const saveSettings = async () => {
     prevControlOverlay !== config.get("enableControlOverlay");
   const ttsHistoryOverlayJustChanged =
     prevTTSHistoryOverlay !== config.get("enableTTSHistoryOverlay");
+  const cameraMonitorJustChanged =
+    prevCameraMonitor !== config.get("enableCameraMonitor");
 
   if (
     hideGlobalMissionsJustEnabled ||
@@ -193,6 +198,10 @@ export const saveSettings = async () => {
   ) {
     observers.body.start();
     observers.modal.start();
+  }
+
+  if (cameraMonitorJustChanged) {
+    observers.body.start();
   }
 
   if (eventLogJustEnabled || hideGiftedMessageJustEnabled) {

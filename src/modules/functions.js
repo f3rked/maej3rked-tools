@@ -282,7 +282,9 @@ export const displayStreamSearch = () => {
 
     streams.forEach((stream) => {
       // Update the selector to target the title element within each stream
-      const titleElem = stream.querySelector(".live-stream_name__ngU04");
+      const titleElem = stream.querySelector(
+        ELEMENTS.livestreams.camera.name.selector
+      );
       if (titleElem) {
         const titleText = titleElem.textContent.toLowerCase();
         stream.style.display = titleText.includes(filter) ? "" : "none";
@@ -612,7 +614,6 @@ const toggleChat = () => {
     const showChatButtonIcon = document.createElement("div");
     showChatButtonIcon.classList.add(ELEMENTS.modal.close.icon.class);
     showChatButtonIcon.innerHTML = CLOSE_SVG;
-    console.log("showing chat button");
 
     showChatButton.appendChild(showChatButtonIcon);
     document.body.appendChild(showChatButton);
@@ -620,7 +621,6 @@ const toggleChat = () => {
     const showChatButton = document.querySelector(
       ELEMENTS.openChatButton.selector
     );
-    console.log("showChatButton", showChatButton);
     showChatButton?.remove();
   }
 };
@@ -1507,6 +1507,159 @@ export const hideInitialModal = () => {
   }
 };
 
+export const toggleCameraMonitor = (toggle) => {
+  const existingMonitor = document.querySelector(".maejok-camera-monitor");
+
+  if (!toggle) {
+    existingMonitor?.remove();
+    return;
+  }
+
+  if (existingMonitor) return;
+
+  const leftPanel = document.querySelector(ELEMENTS.leftPanel.selector);
+  if (!leftPanel) return;
+  const navButtons = leftPanel.querySelector(
+    ".item-nav-buttons_item-nav-buttons__wQ6LE"
+  );
+
+  const cameraMonitor = document.createElement("div");
+  cameraMonitor.classList.add("maejok-camera-monitor");
+
+  const { container, totalCameras } = createCameras();
+
+  cameraMonitor.innerHTML = `<div class="panel_panel__Tdjid panel_full-height__2dCSF panel_no-padding__woODX panel_collapsible__7RVbk panel_collapsed__9xI1L">
+      <div class="panel_header__T2yFW" onclick="this.parentElement.classList.toggle('panel_collapsed__9xI1L')">
+        <div class="panel_collapse__rvsD_">
+          <div class="icon_icon__bDzMA">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M19 8H5V10H7V12H9V14H11V16H13V14H15V12H17V10H19V8Z"
+                fill="black"
+              ></path>
+            </svg>
+          </div>
+        </div>
+        <div class="panel_title__7jO54">Monitoring Point</div>
+        <div class="panel_subtitle__Jx3Sm maejok-panel-subtitle">${totalCameras} Total</div>
+      </div>
+      <div class="panel_body__O5yBA"></div>
+    </div>`;
+
+  const panelBody = cameraMonitor.querySelector(".panel_body__O5yBA");
+  panelBody.appendChild(container);
+  navButtons.insertAdjacentElement("afterend", cameraMonitor);
+};
+
+const createCameras = () => {
+  const cameras = document.querySelectorAll(
+    ELEMENTS.livestreams.camera.id.selector
+  );
+  if (cameras.length === 0) return document.createElement("div");
+
+  const container = document.createElement("div");
+  container.classList.add(ELEMENTS.cameraMonitor.list.class);
+
+  cameras.forEach((camera, idx) => {
+    const buttonId = camera.id;
+    const monitorButton = camera.cloneNode(true);
+    monitorButton.classList.add(ELEMENTS.cameraMonitor.row.class);
+    monitorButton.classList.remove(ELEMENTS.livestreams.button.class);
+    monitorButton.id = `monitor-${buttonId}`;
+    monitorButton.type = "button";
+
+    const thumbnailContainer = monitorButton.querySelector(
+      ELEMENTS.livestreams.thumbnailContainer.selector
+    );
+    thumbnailContainer?.remove();
+    const thumbnailImage = monitorButton.querySelector(
+      ELEMENTS.livestreams.thumbnail.selector
+    );
+    thumbnailImage?.remove();
+
+    let camNum = (idx + 1).toString().padStart(2, "0");
+    let camName =
+      monitorButton
+        .querySelector(ELEMENTS.livestreams.camera.name.selector)
+        ?.textContent?.trim() || `CAM ${camNum}`;
+
+    monitorButton.innerHTML = `
+      <div class="maejok-cam-icon icon_icon__bDzMA"><svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M2 5h14v4h2V7h2V5h2v14h-2v-2h-2v-2h-2v4H2V5zm2 12h10V7H4v10z" fill="currentColor"></path></svg></div>
+      <span class="maejok-cam-name">${camName}</span>
+    `;
+
+    monitorButton.addEventListener("click", function (e) {
+      e.preventDefault();
+      const closeButton = document.querySelector(
+        ".live-stream-player_close__c_GRv"
+      );
+      if (closeButton) {
+        closeButton.click();
+        setTimeout(() => {
+          const targetCam = document.getElementById(buttonId);
+          targetCam?.click();
+        }, 60);
+      } else {
+        const targetCam = document.getElementById(buttonId);
+        targetCam?.click();
+      }
+    });
+
+    container.appendChild(monitorButton);
+  });
+
+  return { container, totalCameras: cameras.length };
+};
+
+export const updatedSelectedCamera = () => {
+  const selectedCameraName = document
+    .querySelector(ELEMENTS.livestreams.player.header.name.selector)
+    ?.textContent?.trim()
+    .toLowerCase();
+
+  if (!selectedCameraName) return;
+
+  const cameraMonitor = document.querySelector(
+    ELEMENTS.cameraMonitor.list.selector
+  );
+  if (!cameraMonitor) return;
+
+  cameraMonitor
+    .querySelectorAll(ELEMENTS.cameraMonitor.selected.selector)
+    .forEach((el) =>
+      el.classList.remove(ELEMENTS.cameraMonitor.selected.class)
+    );
+
+  const rows = cameraMonitor.querySelectorAll(
+    ELEMENTS.cameraMonitor.row.selector
+  );
+  for (const row of rows) {
+    const rowName = row
+      .querySelector(ELEMENTS.cameraMonitor.name.selector)
+      ?.textContent?.trim()
+      .toLowerCase();
+    if (rowName === selectedCameraName) {
+      row.classList.add(ELEMENTS.cameraMonitor.selected.class);
+      break;
+    }
+  }
+};
+
+export const hideAnnouncements = (toggle) => {
+  const announcements = document.querySelector(
+    ".announcements_announcements__12345"
+  );
+  announcements?.classList.toggle("maejok-hide", toggle);
+};
+
 export const hideGiftMessage = (toast) => {
   // Way to distinguish other types of system messages
   const containsHeader = toast.querySelector("h3");
@@ -1788,6 +1941,7 @@ export const startMaejokTools = async () => {
   togglePopoutChatButton(config.get("enablePopoutChatButton"));
   toggleHiddenItems(config.get("showHiddenItems"));
   toggleTokenConversion(config.get("convertTokenValues"));
+  toggleCameraMonitor(config.get("enableCameraMonitor"));
 
   observers.home.start();
 
@@ -1805,6 +1959,10 @@ export const startMaejokTools = async () => {
   ) {
     observers.body.start();
     observers.modal.start();
+  }
+
+  if (config.get("enableCameraMonitor")) {
+    observers.body.start();
   }
 
   if (config.get("enableEventsLog") || config.get("hideGiftedPassMessage")) {

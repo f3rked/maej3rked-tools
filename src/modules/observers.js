@@ -14,6 +14,8 @@ import {
   handleOverlays,
   toggleFullscreenButton,
   toggleVideoAspectRatioFix,
+  updatedSelectedCamera,
+  toggleCameraMonitor,
 } from "./functions";
 import ELEMENTS from "../data/elements";
 import { makeDraggable } from "./events";
@@ -279,6 +281,10 @@ const observers = {
             toggleVideoAspectRatioFix(true);
           }
 
+          if (config.get("enableCameraMonitor")) {
+            updatedSelectedCamera();
+          }
+
           if (config.get("enableStreamSearch")) {
             const streamGrid = document.querySelector(
               ".live-streams_live-streams-grid__Tp4ah"
@@ -336,6 +342,15 @@ const observers = {
           }
 
           if (
+            config.get("enableCameraMonitor") &&
+            mutation.addedNodes[0]?.classList?.contains(
+              ELEMENTS.leftPanel.navButtons.class
+            )
+          ) {
+            toggleCameraMonitor(true);
+          }
+
+          if (
             mutation.addedNodes[0]?.classList?.contains(
               "live-streams-auditions_live-streams-auditions__sRcSq"
             ) &&
@@ -381,7 +396,7 @@ const observers = {
       const ttsHistory = document.querySelector(
         ELEMENTS.ttsHistory.selector + ":not(.maejok-tts-history-overlay)"
       );
-      console.log("ttsHistory", ttsHistory);
+
       if (!ttsHistory) return;
 
       // Create a mutation observer to watch for the marquee element
@@ -397,8 +412,6 @@ const observers = {
           const ttsObserver = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
               if (mutation.type === "characterData") {
-                console.log("new tts message");
-                console.log(mutation);
                 // No SFX or TTS messages sent recently...
                 toggleTTSHistoryOverlay(config.get("enableTTSHistoryOverlay"));
               }
@@ -431,7 +444,7 @@ const observers = {
       const existingMarquee = ttsHistory.querySelector("marquee");
       if (existingMarquee) {
         // If marquee exists, trigger the observer callback
-        marqueeObserver?.trigger();
+        //marqueeObserver?.trigger();
       }
     },
 

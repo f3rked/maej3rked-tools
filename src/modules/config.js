@@ -8,6 +8,7 @@ const Config = () => {
     userData: null,
     enablePlugin: true,
     enableDimMode: false,
+    enableCameraMonitor: false,
     enableHideInitialModal: false,
 
     convertTokenValues: false,
@@ -37,6 +38,7 @@ const Config = () => {
     hideScreenTakeovers: false,
     hideNavigationOverlay: false,
     hideGiftedPassMessage: false,
+    hideAnnouncements: false,
 
     enableUpdateChecks: true,
     updateCheckFrequency: 10,
@@ -167,6 +169,18 @@ const Config = () => {
             },
             // site-options
 
+            // enableCameraMonitor
+            {
+              name: "enableCameraMonitor",
+              label: "Enable Camera Monitor",
+              type: "toggle",
+              value: cfg.enableCameraMonitor,
+              group: "site-options",
+              help: {
+                label: "?",
+                text: `<p>Enabling this option will show a camera monitor in the left panel for switching between cameras.</p>`,
+              },
+            },
             // enableDimMode
             {
               name: "enableDimMode",
@@ -277,6 +291,18 @@ const Config = () => {
               help: {
                 label: "?",
                 text: `<p>Enabling this option will prevent the <strong>Screen Takeovers</strong> (Cigarette Deliveries, Loot Crates, etc.) from showing, however, you will still hear the sound effect.</p>`,
+              },
+            },
+            // hideAnnouncements
+            {
+              name: "hideAnnouncements",
+              label: "Hide Announcements",
+              type: "toggle",
+              value: cfg.hideAnnouncements,
+              group: "site-options",
+              help: {
+                label: "?",
+                text: `<p>Enabling this option will prevent the <strong>Announcements</strong> from showing.</p>`,
               },
             },
             //convertTokenValues

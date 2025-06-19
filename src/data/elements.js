@@ -20,6 +20,10 @@ const Elements = {
         class: "status-bar_day__V8Zac",
       },
     },
+    announcements: {
+      selector: `[class^="announcements_announcements__"]`,
+      class: "announcements_announcements__12345",
+    },
   },
   globalMissions: {
     selector: `[class^="global-mission-modal_backdrop"]`,
@@ -29,9 +33,40 @@ const Elements = {
     selector: `[class^="main-panel_main-panel__"]`,
     class: "main-panel_main-panel__4RhyF",
   },
+  leftPanel: {
+    selector: `[class^="layout_left__"]`,
+    class: "layout_left__O2uku",
+    navButtons: {
+      selector: `[class*="item-nav-buttons_item-nav-buttons__"]`,
+      class: "item-nav-buttons_item-nav-buttons__wQ6LE",
+    },
+  },
+  panel: {
+    selector: `[class^="panel_panel__"]`,
+    class: "panel_panel__Tdjid",
+    collapsed: {
+      selector: `[class*="panel_collapsed__"]`,
+      class: "panel_collapsed__9xI1L",
+    },
+  },
   livestreams: {
     selector: `[class*="live-streams_live-streams__"]`,
     class: "live-streams_live-streams__BYV96",
+    button: {
+      selector: `button[class*="live-stream_live-stream__"]`,
+      class: "live-stream_live-stream__uVezO",
+    },
+    camera: {
+      selector: `[class*="live-streams_live-stream__"]`,
+      class: "live-streams_live-stream__4Q7MX",
+      id: {
+        selector: `[id^="camera-"][id$="-4"]`,
+      },
+      name: {
+        selector: `[class^="live-stream_name__"]`,
+        class: "live-stream_name__ngU04",
+      },
+    },
     grid: {
       selector: `[class*="live-streams_live-streams-grid__"]`,
       class: "live-streams_live-streams-grid__Tp4ah",
@@ -39,6 +74,14 @@ const Elements = {
     cinema: {
       selector: `[class*="live-stream-player_cinema"]`,
       class: "live-stream-player_cinema__yPkWC",
+    },
+    thumbnail: {
+      selector: `[class*="live-stream_thumbnail__"]`,
+      class: "live-stream_thumbnail__RN6pc",
+    },
+    thumbnailContainer: {
+      selector: `[class*="live-stream_inner__"]`,
+      class: "live-stream_inner__n9syF",
     },
     player: {
       selector: `[class^="live-stream-player_live-stream-player__"]`,
@@ -822,6 +865,24 @@ const Elements = {
   openChatButton: {
     selector: `[class*="maejok-show-chat-button"]`,
     class: "maejok-show-chat-button",
+  },
+  cameraMonitor: {
+    list: {
+      selector: `[class*="maejok-camera-monitor-list"]`,
+      class: "maejok-camera-monitor-list",
+    },
+    row: {
+      selector: `[class*="maejok-camera-monitor-row"]`,
+      class: "maejok-camera-monitor-row",
+    },
+    name: {
+      selector: `[class*="maejok-cam-name"]`,
+      class: "maejok-cam-name",
+    },
+    selected: {
+      selector: `[class*="maejok-camera-monitor-selected"]`,
+      class: "maejok-camera-monitor-selected",
+    },
   },
 };
 
