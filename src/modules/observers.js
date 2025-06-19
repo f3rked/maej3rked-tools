@@ -15,7 +15,6 @@ import {
   toggleFullscreenButton,
   toggleVideoAspectRatioFix,
   updatedSelectedCamera,
-  toggleCameraMonitor,
 } from "./functions";
 import ELEMENTS from "../data/elements";
 import { makeDraggable } from "./events";
@@ -339,15 +338,6 @@ const observers = {
             mutation.addedNodes.length === 0
           ) {
             return;
-          }
-
-          if (
-            config.get("enableCameraMonitor") &&
-            mutation.addedNodes[0]?.classList?.contains(
-              ELEMENTS.leftPanel.navButtons.class
-            )
-          ) {
-            toggleCameraMonitor(true);
           }
 
           if (

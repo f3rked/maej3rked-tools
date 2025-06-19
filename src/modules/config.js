@@ -39,7 +39,7 @@ const Config = () => {
     hideNavigationOverlay: false,
     hideGiftedPassMessage: false,
     hideAnnouncements: false,
-
+    hideStoxMarket: false,
     enableUpdateChecks: true,
     updateCheckFrequency: 10,
     showUpdateNotice: false,
@@ -303,6 +303,18 @@ const Config = () => {
               help: {
                 label: "?",
                 text: `<p>Enabling this option will prevent the <strong>Announcements</strong> from showing.</p>`,
+              },
+            },
+            // hideStox
+            {
+              name: "hideStoxMarket",
+              label: "Hide Stox Market",
+              type: "toggle",
+              value: cfg.hideStoxMarket,
+              group: "site-options",
+              help: {
+                label: "?",
+                text: `<p>Enabling this option will prevent the <strong>Stox Market</strong> from showing.</p>`,
               },
             },
             //convertTokenValues
@@ -1348,4 +1360,5 @@ const Config = () => {
   return { plugin, get, set, load, save, settingsOptions };
 };
 
-export default Config();
+const config = Config();
+export default config;

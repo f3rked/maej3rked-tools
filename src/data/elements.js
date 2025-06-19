@@ -41,6 +41,22 @@ const Elements = {
       class: "item-nav-buttons_item-nav-buttons__wQ6LE",
     },
   },
+  bottomPanel: {
+    announcements: {
+      selector: `[class*="announcement-bar_announcement-bar__"]`,
+      class: "announcement-bar_announcement-bar__gcGuh",
+    },
+  },
+  stoxMarket: {
+    bottom: {
+      selector: `[class*="layout_bottom__"]`,
+      class: "layout_bottom__qRsMw",
+    },
+    leftPanel: {
+      selector: `[class*="stocks-panel_stocks-panel___"]`,
+      class: "stocks-panel_stocks-panel___JNmj",
+    },
+  },
   panel: {
     selector: `[class^="panel_panel__"]`,
     class: "panel_panel__Tdjid",

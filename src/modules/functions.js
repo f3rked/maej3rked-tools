@@ -1653,11 +1653,18 @@ export const updatedSelectedCamera = () => {
   }
 };
 
-export const hideAnnouncements = (toggle) => {
+export const toggleHideAnnouncements = (toggle) => {
   const announcements = document.querySelector(
-    ".announcements_announcements__12345"
+    ".announcement-bar_announcement-bar__gcGuh"
   );
   announcements?.classList.toggle("maejok-hide", toggle);
+};
+
+export const toggleHideStoxMarket = (toggle) => {
+  Object.values(ELEMENTS.stoxMarket).forEach((element) => {
+    const stoxElement = document.querySelector(element.selector);
+    stoxElement?.classList.toggle("maejok-hide", toggle);
+  });
 };
 
 export const hideGiftMessage = (toast) => {
@@ -1929,6 +1936,7 @@ export const startMaejokTools = async () => {
   disableSoundEffects(config.get("disableSoundEffects"));
   applySettingsToChat();
   refactoredObservers.chat.start();
+  refactoredObservers.leftPanel.start();
   toggleScreenTakeovers(config.get("hideScreenTakeovers"));
 
   if (isPopoutChat) {
@@ -1942,6 +1950,7 @@ export const startMaejokTools = async () => {
   toggleHiddenItems(config.get("showHiddenItems"));
   toggleTokenConversion(config.get("convertTokenValues"));
   toggleCameraMonitor(config.get("enableCameraMonitor"));
+  toggleHideAnnouncements(config.get("hideAnnouncements"));
 
   observers.home.start();
 
@@ -1959,10 +1968,6 @@ export const startMaejokTools = async () => {
   ) {
     observers.body.start();
     observers.modal.start();
-  }
-
-  if (config.get("enableCameraMonitor")) {
-    observers.body.start();
   }
 
   if (config.get("enableEventsLog") || config.get("hideGiftedPassMessage")) {
@@ -2006,6 +2011,7 @@ export const stopMaejokTools = () => {
   toggleLogoHover(false);
 
   refactoredObservers.chat.stop();
+  refactoredObservers.leftPanel.stop();
   observers.chatters.stop();
   observers.body.stop();
   observers.modal.stop();

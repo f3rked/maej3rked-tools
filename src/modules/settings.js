@@ -39,6 +39,8 @@ import {
   toggleFullscreenButton,
   toggleVideoAspectRatioFix,
   toggleCameraMonitor,
+  toggleHideAnnouncements,
+  toggleHideStoxMarket,
 } from "./functions";
 import {
   start as startRecentChatters,
@@ -106,6 +108,8 @@ export const saveSettings = async () => {
     toggleFullscreenButton(config.get("enableFullscreenButton"));
     toggleVideoAspectRatioFix(config.get("enableVideoAspectRatioFix"));
     toggleCameraMonitor(config.get("enableCameraMonitor"));
+    toggleHideAnnouncements(config.get("hideAnnouncements"));
+    toggleHideStoxMarket(config.get("hideStoxMarket"));
   }
 
   if (!config.get("enableBigScreen")) {
