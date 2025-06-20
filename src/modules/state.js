@@ -23,6 +23,7 @@ const State = () => {
     timestampInterval: null,
     updateCheckInterval: null,
     daysLeftInterval: null,
+    ttsHistoryOverlayTimeout: null,
     running: false,
     packageJson: {},
     updateShown: false,

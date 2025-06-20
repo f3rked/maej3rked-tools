@@ -284,6 +284,17 @@ const observers = {
             updatedSelectedCamera();
           }
 
+          if (config.get("enableTTSHistoryOverlay")) {
+            const target = mutation.target;
+            const cameraChanged = target.classList?.contains(
+              ELEMENTS.livestreams.container.class
+            );
+
+            if (cameraChanged) {
+              toggleTTSHistoryOverlay(true);
+            }
+          }
+
           if (config.get("enableStreamSearch")) {
             const streamGrid = document.querySelector(
               ".live-streams_live-streams-grid__Tp4ah"
@@ -383,65 +394,33 @@ const observers = {
     start: () => {
       state.get("observers").tts?.disconnect();
 
-      const ttsHistory = document.querySelector(
-        ELEMENTS.ttsHistory.selector + ":not(.maejok-tts-history-overlay)"
+      const statusBarMiddle = document.querySelector(
+        ".status-bar_middle__nubSy"
       );
+      if (!statusBarMiddle) return;
 
-      if (!ttsHistory) return;
-
-      // Create a mutation observer to watch for the marquee element
-      const marqueeObserver = new MutationObserver((mutations) => {
-        const marquee = ttsHistory.querySelector("marquee");
-        if (marquee) {
-          // Once we find the marquee, stop observing and set up the text observer
-          marqueeObserver.disconnect();
-
-          const textNode = marquee.firstChild;
-          if (!textNode || textNode.nodeType !== Node.TEXT_NODE) return;
-
-          const ttsObserver = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-              if (mutation.type === "characterData") {
-                // No SFX or TTS messages sent recently...
-                toggleTTSHistoryOverlay(config.get("enableTTSHistoryOverlay"));
-              }
-            });
-          });
-
-          ttsObserver.observe(textNode, {
-            characterData: true,
-            subtree: false,
-          });
-
-          state.set("observers", {
-            ...state.get("observers"),
-            tts: ttsObserver,
-          });
-        }
+      const ttsObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === "characterData") {
+            toggleTTSHistoryOverlay(true);
+          }
+        });
       });
 
-      marqueeObserver.observe(ttsHistory, {
-        childList: true,
+      ttsObserver.observe(statusBarMiddle, {
+        characterData: true,
         subtree: true,
       });
 
       state.set("observers", {
         ...state.get("observers"),
-        ttsMarquee: marqueeObserver,
+        tts: ttsObserver,
       });
-
-      // Check if marquee already exists
-      const existingMarquee = ttsHistory.querySelector("marquee");
-      if (existingMarquee) {
-        // If marquee exists, trigger the observer callback
-        //marqueeObserver?.trigger();
-      }
     },
 
     stop: () => {
       const observers = state.get("observers");
       observers.tts?.disconnect();
-      observers.ttsMarquee?.disconnect();
     },
   },
 };

@@ -72,6 +72,10 @@ const Elements = {
       selector: `button[class*="live-stream_live-stream__"]`,
       class: "live-stream_live-stream__uVezO",
     },
+    container: {
+      selector: `[class*="live-stream-player_container__"]`,
+      class: "live-stream-player_container__A4sNR",
+    },
     camera: {
       selector: `[class*="live-streams_live-stream__"]`,
       class: "live-streams_live-stream__4Q7MX",
@@ -531,13 +535,17 @@ const Elements = {
       selector: `[class*="tts-history_message__"]`,
       class: "tts-history_message__Ya_zB",
     },
+    room: {
+      selector: `[class*="tts-history_room__"]`,
+      class: "tts-history_room__QNUZ0",
+    },
   },
   ttsHistoryOverlay: {
-    selector: `[class^="maejok-tts-history-overlay"]`,
+    selector: `[class*="maejok-tts-history-overlay"]`,
     class: "maejok-tts-history-overlay",
   },
   ttsHistoryOverlayContainer: {
-    selector: `[class^="maejok-tts-history-overlay-container"]`,
+    selector: `[class*="maejok-tts-history-overlay-container"]`,
     class: "maejok-tts-history-overlay-container",
   },
   experience: {

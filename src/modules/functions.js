@@ -340,6 +340,21 @@ export const toggleTimestampOverlay = (toggle) => {
   }
 };
 
+const isConnectedRoom = (activeCameraName, room) => {
+  // Define connected room groups
+  const connectedRooms = {
+    livingRoom: ["living room", "living room ptz", "kitchen"],
+  };
+
+  // Check if current camera and message room are in the same group
+  for (const [_group, rooms] of Object.entries(connectedRooms)) {
+    const isActiveInGroup = rooms.includes(activeCameraName);
+    const isMessageInGroup = rooms.includes(room);
+    if (isActiveInGroup && isMessageInGroup) return true;
+  }
+  return false;
+};
+
 export const toggleTTSHistoryOverlay = (toggle) => {
   const cinemaMode = document.querySelector(
     ELEMENTS.livestreams.cinema.selector
@@ -356,17 +371,86 @@ export const toggleTTSHistoryOverlay = (toggle) => {
       return;
     }
 
-    const ttsHistoryOverlay = document.querySelector(
-      ELEMENTS.ttsHistoryOverlay.selector
+    const activeCameraName = document
+      .querySelector(ELEMENTS.livestreams.player.header.name.selector)
+      ?.textContent.trim()
+      .toLowerCase();
+
+    const messageRoom = document.querySelector(
+      ELEMENTS.ttsHistory.room.selector
     );
-    ttsHistoryOverlay?.remove();
+    const newMessageRoomText = messageRoom?.textContent.trim().toLowerCase();
+    if (newMessageRoomText === undefined) return;
+
+    const ttsHistoryOverlay = document.querySelector(
+      ELEMENTS.ttsHistoryOverlayContainer.selector
+    );
+    const currentMessageRoom = ttsHistoryOverlay?.querySelector(
+      ELEMENTS.ttsHistory.room.selector
+    );
+    const currentMessageRoomText = currentMessageRoom?.textContent
+      .trim()
+      .toLowerCase();
+
+    // Remove the overlay if the tts room is not the same as the current room - trying to catch room changes
+    if (
+      activeCameraName !== "director" &&
+      !isConnectedRoom(activeCameraName, currentMessageRoomText) &&
+      activeCameraName !== currentMessageRoomText
+    ) {
+      ttsHistoryOverlay?.remove();
+    }
+
+    // Create the overlay only if we're in director view, connected rooms, or direct room match
+    if (
+      activeCameraName !== "director" &&
+      !isConnectedRoom(activeCameraName, newMessageRoomText) &&
+      activeCameraName !== newMessageRoomText
+    ) {
+      return;
+    }
+
+    // Clear any existing timeout before creating a new overlay
+    const existingTimeout = state.get("ttsHistoryOverlayTimeout");
+    if (existingTimeout) {
+      clearTimeout(existingTimeout);
+    }
+
+    const ttsHistoryOverlays = document.querySelectorAll(
+      ELEMENTS.ttsHistoryOverlayContainer.selector
+    );
+    ttsHistoryOverlays.forEach((overlay) => {
+      removeTTSHistoryOverlayWithTransition(overlay);
+    });
     createTTSHistoryOverlay(ttsHistory);
+
+    // Auto-hide after 30 seconds and store the timeout ID
+    const timeoutId = setTimeout(() => {
+      const overlaysToRemove = document.querySelectorAll(
+        ELEMENTS.ttsHistoryOverlayContainer.selector
+      );
+      overlaysToRemove.forEach((overlay) => {
+        removeTTSHistoryOverlayWithTransition(overlay);
+      });
+      state.set("ttsHistoryOverlayTimeout", null);
+    }, 15000);
+
+    state.set("ttsHistoryOverlayTimeout", timeoutId);
   } else {
+    // Clear any existing timeout when toggling off
+    const existingTimeout = state.get("ttsHistoryOverlayTimeout");
+    if (existingTimeout) {
+      clearTimeout(existingTimeout);
+      state.set("ttsHistoryOverlayTimeout", null);
+    }
+
     observers.tts.stop();
-    const ttsHistoryOverlay = document.querySelector(
-      ELEMENTS.ttsHistoryOverlay.selector
+    const ttsHistoryOverlays = document.querySelectorAll(
+      ELEMENTS.ttsHistoryOverlayContainer.selector
     );
-    ttsHistoryOverlay?.remove();
+    ttsHistoryOverlays.forEach((overlay) => {
+      removeTTSHistoryOverlayWithTransition(overlay);
+    });
   }
 };
 
@@ -383,6 +467,21 @@ const createTTSHistoryOverlay = (ttsHistory) => {
   );
   newTTSHistory?.classList.add(ELEMENTS.ttsHistoryOverlay.class);
   document.body.appendChild(ttsHistoryOverlayContainer);
+
+  requestAnimationFrame(() => {
+    ttsHistoryOverlayContainer.classList.add("maejok-fade-in");
+  });
+};
+
+const removeTTSHistoryOverlayWithTransition = (overlayElement) => {
+  if (!overlayElement) return;
+
+  overlayElement.classList.remove("maejok-fade-in");
+  overlayElement.classList.add("maejok-fade-out");
+
+  setTimeout(() => {
+    overlayElement.remove();
+  }, 200);
 };
 
 export const handleOverlays = (toggle = true) => {
@@ -617,6 +716,11 @@ const toggleChat = () => {
 
     showChatButton.appendChild(showChatButtonIcon);
     document.body.appendChild(showChatButton);
+
+    // Animate the rotation from 0 to 45 degrees
+    requestAnimationFrame(() => {
+      showChatButton.style.transform = "rotate(45deg)";
+    });
   } else {
     const showChatButton = document.querySelector(
       ELEMENTS.openChatButton.selector
@@ -1606,7 +1710,7 @@ const createCameras = () => {
         setTimeout(() => {
           const targetCam = document.getElementById(buttonId);
           targetCam?.click();
-        }, 60);
+        }, 100);
       } else {
         const targetCam = document.getElementById(buttonId);
         targetCam?.click();
