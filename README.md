@@ -91,9 +91,11 @@ Create a new Userscript using your browser extension of choice (eg: Tampermonkey
 // @icon         https://raw.githubusercontent.com/f3rked/maej3rked-tools/master/public/images/icon.png
 // @match        *://*.fishtank.live/*
 // @run-at       document-idle
-// @require      file:\\\PATH_TO_PROJECT_DIR\dist\maej3rked-tools.dev.user.js
+// @require      file:///path/to/project/dist/maej3rked-tools.dev.user.js
 // ==/UserScript==
 ```
+> If on windows and the project is not on the system partition, `@require` can take a drive name
+> i.e.: `file//d:/path/to/project/...`
 
 **Be sure to replace `PATH_TO_PROJECT_DIR` with the path to your actual project directory and save the new userscript.**
 
@@ -112,6 +114,8 @@ npm run dev
 ```
 
 Now any time you update and save a `.scss` or `.js` file, Webpack will automatically rebuild the plugin. You must refresh Fishtank.live to see your changes.
+
+> If using violentmonkey, you **NEED** to modify the `@require` comment after each change. Go to the entry in violentmonkey, remove a character from the path and add it back, then save the file (Ctrl+S)
 
 **Note**: _Build output will be located at `./dist/maej3rked-tools.user.js`_
 
