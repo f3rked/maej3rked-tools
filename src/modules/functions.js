@@ -1020,7 +1020,7 @@ export const mentionUser = (displayName) => {
   if (typeof displayName === "object") displayName = displayName.displayName;
 
   const mention = new CustomEvent("insertmention", {
-    detail: `${displayName}`,
+    detail: `${displayName} `,
   });
 
   playSound("click-high-short");
