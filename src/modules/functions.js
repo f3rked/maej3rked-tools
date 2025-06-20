@@ -199,6 +199,26 @@ const fetchLiveStreamStatus = async () => {
   }
 };
 
+export const getRooms = async () => {
+  try {
+    const response = await fetch("https://api.fishtank.live/v1/live-streams", {
+      method: "GET",
+      credentials: "same-origin",
+    });
+
+    const data = await response.json();
+
+    return data.liveStreams.map((stream) => ({
+      id: stream.id,
+      name: stream.name,
+      switchTo: () => switchToRoom(stream),
+    }));
+  } catch (error) {
+    console.error("Failed to fetch rooms:", error);
+    return [];
+  }
+};
+
 export const toggleNontentOverlay = () => {
   const liveStreamContainer = document.querySelector(
     ELEMENTS.livestreams.selector
@@ -623,6 +643,123 @@ export const toggleFullscreenButton = (toggle) => {
   fullscreenButton.classList.toggle("maejok-show-fullscreen", toggle);
 };
 
+const isCinemaMode = () => {
+  const cinemaButton = document.querySelector(
+    '[class*="live-stream-controls_live-stream-cinema"]'
+  );
+  return cinemaButton
+    ? Array.from(cinemaButton.classList).some((cls) =>
+        cls.includes("live-stream-controls_enabled__")
+      )
+    : false;
+};
+
+const toggleCinemaMode = () => {
+  const cinemaButton = document.querySelector(
+    '[class*="live-stream-controls_live-stream-cinema"] button'
+  );
+  if (cinemaButton) {
+    cinemaButton.click();
+  }
+};
+
+const switchToRoom = async (stream) => {
+  const currentPlayer = document.querySelector(
+    `#live-stream-player-${stream.id}`
+  );
+  if (currentPlayer) {
+    console.debug(`already viewing ${stream.name}`);
+    return;
+  }
+  const selectedStream = document.querySelector(
+    '[class*="live-streams_selected-live-stream"]'
+  );
+
+  if (!selectedStream) {
+    // in the grid, just click the stream
+    const targetButton = document.querySelector(`#${stream.id}`);
+    if (targetButton) {
+      targetButton.click();
+      return;
+    }
+  }
+  const currentPlayerId = selectedStream.querySelector(
+    '[id^="live-stream-player-camera-"]'
+  )?.id;
+
+  if (currentPlayerId) {
+    const currentStreamId = currentPlayerId.replace("live-stream-player-", "");
+    try {
+      const effectsResponse = await fetch(
+        `https://api.fishtank.live/v1/live-streams/effects/${currentStreamId}`,
+        {
+          credentials: "same-origin",
+        }
+      );
+      const effectsData = await effectsResponse.json();
+
+      const switchAction = effectsData.clickableZones?.find(
+        (zone) =>
+          zone.action?.name === "Change Live Stream" &&
+          zone.action?.metadata === stream.id
+      );
+
+      if (switchAction) {
+        console.debug(`found switch for ${stream.id}`);
+
+        const clickableZones = document.querySelector(
+          '[class*="clickable-zones_clickable-zones"]'
+        );
+        if (clickableZones) {
+          const polygons = clickableZones.querySelectorAll("polygon");
+          const targetPolygon = Array.from(polygons).find((_, index) => {
+            return effectsData.clickableZones[index]?.id === switchAction.id;
+          });
+
+          if (targetPolygon) {
+            targetPolygon.dispatchEvent(
+              new MouseEvent("click", {
+                bubbles: true,
+                cancelable: true,
+                view: window,
+              })
+            );
+            return;
+          }
+        }
+      }
+    } catch (error) {
+      console.debug("error in switch:", error);
+    }
+  }
+
+  console.debug(`using grid for ${stream.name}`);
+  const inCinemaMode = isCinemaMode();
+  const closeButton = document.querySelector(
+    '[class*="live-stream-player_close"]'
+  );
+  const chatHidden = isChatHidden();
+  if (closeButton) {
+    closeButton.click();
+    setTimeout(() => {
+      const targetButton = document.querySelector(`#${stream.id}`);
+      if (targetButton) {
+        targetButton.click();
+        if (inCinemaMode) {
+          setTimeout(() => {
+            toggleCinemaMode();
+          }, 150);
+          if (chatHidden) {
+            setTimeout(() => {
+              toggleChat();
+            }, 150);
+          }
+        }
+      }
+    }, 150);
+  }
+};
+
 export const toggleUserOverlay = (toggle) => {
   const userOverlay = document.querySelector(
     ELEMENTS.livestreams.overlay.selector
@@ -693,6 +830,11 @@ export const toggleHideChatButton = (toggle) => {
     chatButton?.remove();
     openChatButton?.remove();
   }
+};
+
+const isChatHidden = () => {
+  const chat = document.querySelector(ELEMENTS.chat.main.selector);
+  return chat?.classList.contains("maejok-hide") || false;
 };
 
 const toggleChat = () => {
