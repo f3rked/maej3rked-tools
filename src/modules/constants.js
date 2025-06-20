@@ -326,6 +326,26 @@ export const CHAT_OVERLAY = `
   }
 `;
 
+const isCinemaMode = () => {
+  const cinemaButton = document.querySelector(
+    '[class*="live-stream-controls_live-stream-cinema"]'
+  );
+  return cinemaButton
+    ? Array.from(cinemaButton.classList).some((cls) =>
+        cls.includes("live-stream-controls_enabled__")
+      )
+    : false;
+};
+
+const toggleCinemaMode = () => {
+  const cinemaButton = document.querySelector(
+    '[class*="live-stream-controls_live-stream-cinema"] button'
+  );
+  if (cinemaButton) {
+    cinemaButton.click();
+  }
+};
+
 const switchToRoom = async (stream) => {
   const currentPlayer = document.querySelector(
     `#live-stream-player-${stream.id}`
@@ -343,6 +363,7 @@ const switchToRoom = async (stream) => {
     const targetButton = document.querySelector(`#${stream.id}`);
     if (targetButton) {
       targetButton.click();
+      return;
     }
   }
   const currentPlayerId = selectedStream.querySelector(
@@ -396,6 +417,7 @@ const switchToRoom = async (stream) => {
   }
 
   console.debug(`using grid for ${stream.name}`);
+  const inCinemaMode = isCinemaMode();
   const closeButton = document.querySelector(
     '[class*="live-stream-player_close"]'
   );
@@ -405,6 +427,11 @@ const switchToRoom = async (stream) => {
       const targetButton = document.querySelector(`#${stream.id}`);
       if (targetButton) {
         targetButton.click();
+        if (inCinemaMode) {
+          setTimeout(() => {
+            toggleCinemaMode();
+          }, 150);
+        }
       }
     }, 150);
   }
