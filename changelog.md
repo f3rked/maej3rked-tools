@@ -1,5 +1,23 @@
 # MAEJ3RKED-TOOLS CHANGE LOG
 
+# **_v2.31.0_**
+
+_Release: 06-19-2025_
+
+### Notes
+
+- N/A
+
+### Bug Fixes
+
+- N/A
+
+### Features Added / Changed
+
+- Add camera monitor similar to season 2 for cam navigation
+- Fix up some aspects of tts overlay - only display for selected cam or connected rooms (kitchen, living room, ptz)
+- Option to hide stox, announcements
+
 # **_v2.30.0_**
 
 _Release: 06-17-2025_
