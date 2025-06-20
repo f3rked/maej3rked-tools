@@ -21,3 +21,19 @@
     outline: 1px solid rgba($color-red, 0.25);
   }
 }
+
+.maejok-scroll-highlight {
+  animation: maejok-scroll-flash 1.5s ease-out;
+}
+
+@keyframes maejok-scroll-flash {
+  0%,
+  100% {
+    background-color: rgba($color-red, 0.1);
+    outline: 1px solid rgba($color-red, 0.25);
+  }
+  50% {
+    background-color: rgba($color-red, 0.7);
+    outline: 2px solid rgba($color-red, 0.9);
+  }
+}

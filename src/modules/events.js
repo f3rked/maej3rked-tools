@@ -107,8 +107,12 @@ export const rightClick = (event) => {
       if (isMention) {
         const displayName = getElementText(target).replace("@", "");
         const user = findUserByName(displayName);
+        const messageNode = target.closest(`.${ELEMENTS.chat.message.class}`);
         event.preventDefault();
-        menu.open("mention", adjustedPosition, user || displayName);
+        menu.open("mention", adjustedPosition, {
+          user: user || displayName,
+          node: messageNode,
+        });
         return;
       }
 

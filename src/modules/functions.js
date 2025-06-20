@@ -1257,6 +1257,63 @@ export const scrollToBottom = () => {
   chat.scrollTop = chat.scrollHeight;
 };
 
+export const scrollToUserLastMessage = (
+  displayName,
+  fromNode,
+  smooth = true
+) => {
+  const chat = document.querySelector(ELEMENTS.chat.list.selector);
+  if (!chat || !displayName || !fromNode) return;
+
+  const messages = Array.from(chat.children);
+  const fromIndex = messages.indexOf(fromNode);
+
+  if (fromIndex === -1) return false;
+
+  const searchableNodes = messages.slice(0, fromIndex + 1);
+
+  for (let i = searchableNodes.length - 1; i >= 0; i--) {
+    const messageNode = searchableNodes[i];
+    const senderElement = messageNode.querySelector(
+      ELEMENTS.chat.message.sender.selector
+    );
+
+    if (senderElement) {
+      const senderText = senderElement.lastChild?.textContent;
+      if (senderText) {
+        const normalizedSender = senderText.trim().toLowerCase();
+        const normalizedDisplayName = displayName.trim().toLowerCase();
+
+        if (normalizedSender === normalizedDisplayName) {
+          const containerRect = chat.getBoundingClientRect();
+          const targetRect = messageNode.getBoundingClientRect();
+          const offset = targetRect.top - containerRect.top;
+
+          const desiredScrollTop =
+            chat.scrollTop +
+            offset -
+            containerRect.height / 2 +
+            targetRect.height / 2;
+
+          chat.scrollTo({
+            top: desiredScrollTop,
+            behavior: smooth ? "smooth" : "auto",
+          });
+
+          messageNode.classList.add("maejok-scroll-highlight");
+          setTimeout(() => {
+            messageNode.classList.remove("maejok-scroll-highlight");
+          }, 2500);
+
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+};
+
 export const processChatMessage = (node, logMentions = true) => {
   const cfg = config.get();
   const message = new Message(node);
@@ -1346,6 +1403,21 @@ export const getMinutesAgo = (timestamp) => {
   } else {
     return `${minutes} ${minutes === 1 ? "minute" : "minutes"} ago`;
   }
+};
+
+export const getFormattedEasternTime = (timestamp) => {
+  if (!timestamp) return "";
+  const date = new Date(timestamp);
+  const options = {
+    timeZone: "America/New_York",
+    year: "2-digit",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  };
+  return date.toLocaleString("en-US", options);
 };
 
 export const uuid = () => {

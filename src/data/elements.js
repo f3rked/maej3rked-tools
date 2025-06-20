@@ -419,6 +419,10 @@ const Elements = {
       selector: `[class^="chat-message-default_emoji"]`,
       class: `chat-message-default_emoji__5sZ1d`,
     },
+    stox: {
+      selector: `[class^="chat-message-stocks_chat-message-stocks__"]`,
+      class: `chat-message-stocks_chat-message-stocks__8A6yA`,
+    },
     consumable: {
       selector: `[class^="chat-message-happening_chat"]`,
       class: `chat-message-happening_chat-message-happening__tYeDU`,

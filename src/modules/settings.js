@@ -228,8 +228,6 @@ export const applySettingsToChat = () => {
   const nodes = Array.from(messages);
   nodes.forEach((node) => processChatMessage(node, false));
 
-  state.set("contextUser", null);
-
   const chatContainer = document.getElementById("chat-messages");
   if (config.get("hideAvatars")) {
     chatContainer.style.padding = "0px";
@@ -594,60 +592,6 @@ function createHighlightsPanel(list, panel) {
   const wrapper = document.createElement("div");
   wrapper.classList.add(ELEMENTS.settings.accordion.content.highlights.class);
 
-  // const exampleMessage = document.createElement("div");
-  // exampleMessage.classList.add(
-  //   ELEMENTS.settings.accordion.content.highlights.example.class
-  // );
-  // accordion.appendChild(exampleMessage);
-
-  // exampleMessage.innerHTML = `<div id="${
-  //   list.name
-  // }-example-message" class="chat-message-default_chat-message-default__JtJQL" style="
-  // width: 336px; margin: auto; padding: 2px;"><div class="chat-message-default_body__iFlH4"><div class="chat-message-default_avatar__eVmdi"><img src="https://cdn.fishtank.live/avatars/jon.png" alt="" width="32" height="32"><div class="chat-message-default_lvl__QXf_z chat-message-default_higher__Ktvfq">87</div></div><div><span class="chat-message-default_user__uVNvH" style="color: rgb(255, 255, 255);"><span class="chat-message-default_clan__t_Ggo" style="background-color: rgb(108, 0, 0); color: #ffffff;">[COOL]</span>${
-  //   state.get("user").displayName
-  // }</span><span class="chat-message-default_message__milmT">Hey, <span class="chat-message-default_mention__Ieq18">@maejok</span> you are so fucking cool! I wish I could be just like you!</span></div></div><div class="chat-message-default_timestamp__sGwZy">4/20/23, 6:09 PM</div></div>`;
-
-  // accordion ? accordion.appendChild(wrapper) : panel.appendChild(wrapper);
-
-  // const colorWwrapper = document.createElement("div");
-  // colorWwrapper.classList.add(ELEMENTS.inputs.colorPicker.wrapper.class);
-  // wrapper.appendChild(colorWwrapper);
-
-  // colorWwrapper.innerHTML = `
-  //   <div class="${ELEMENTS.inputs.colorPicker.group.class}">
-  //     <span class="${ELEMENTS.inputs.colorPicker.label.class}">Background:</span>
-  //     <toolcool-color-picker color="${list.value.background}"  id="${list.name}-bg-color"></toolcool-color-picker>
-  //   </div>
-  //   <div class="${ELEMENTS.inputs.colorPicker.group.class}">
-  //     <span class="${ELEMENTS.inputs.colorPicker.label.class}">Border:</span>
-  //     <toolcool-color-picker color="${list.value.outline}"  id="${list.name}-outline-color"></toolcool-color-picker>
-  //   </div>
-  //   <div class="${ELEMENTS.inputs.colorPicker.group.class}">
-  //     <span class="${ELEMENTS.inputs.colorPicker.label.class}">Font Color:</span>
-  //     <toolcool-color-picker color="${list.value.font}"  id="${list.name}-font-color"></toolcool-color-picker>
-  //   </div>
-  // `;
-
-  // const $bgColor = colorWwrapper.querySelector(`#${list.name}-bg-color`);
-  // const $border = colorWwrapper.querySelector(`#${list.name}-outline-color`);
-  // const $font = colorWwrapper.querySelector(`#${list.name}-font-color`);
-  // const exampleElement = accordion.querySelector(
-  //   `#${list.name}-example-message`
-  // );
-
-  // $bgColor.addEventListener(
-  //   "change",
-  //   (evt) => (exampleElement.style.backgroundColor = evt.detail.hex8)
-  // );
-  // $border.addEventListener(
-  //   "change",
-  //   (evt) => (exampleElement.style.outline = evt.detail.hex8)
-  // );
-  // $font.addEventListener(
-  //   "change",
-  //   (evt) => (exampleElement.style.color = evt.detail.hex8)
-  // );
-
   const listWrapper = document.createElement("div");
   listWrapper.classList.add(ELEMENTS.inputs.list.wrapper.class);
   wrapper.appendChild(listWrapper);
@@ -668,7 +612,6 @@ function createHighlightsPanel(list, panel) {
       const itemElm = document.createElement("div");
       itemElm.classList.add(ELEMENTS.inputs.list.item.class);
       itemElm.setAttribute("data-user-id", user.id);
-      // itemElm.style.color = user.color;
       itemElm.innerText = user.displayName || rgb(255, 255, 255);
       itemWrapper.appendChild(itemElm);
 
@@ -685,8 +628,6 @@ function createHighlightsPanel(list, panel) {
   accordion.appendChild(wrapper);
 }
 function createLog(list, panel, type) {
-  // refactor this to make resusable createLog for mentions and events
-
   const reverse = config.get(`reverse${type}Log`);
   const props = ELEMENTS.settings;
   const logSettings = props[type.toLowerCase()];

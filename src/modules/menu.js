@@ -9,6 +9,7 @@ import {
   muteUser,
   capitalize,
   getMinutesAgo,
+  scrollToUserLastMessage,
 } from "./functions";
 import { applySettingsToChat } from "./settings";
 import { createEmotesList } from "./emotes";
@@ -118,8 +119,11 @@ export const open = (type, position, options) => {
       return createMenu(position, items, options);
     },
 
-    mention: (user) => {
+    mention: (data) => {
+      const user = data.user;
+      const node = data.node;
       const userFound = typeof user === "object";
+
       const items = [
         {
           label: userFound ? "View Context" : "No Context Found",
@@ -127,7 +131,22 @@ export const open = (type, position, options) => {
             ? () => {
                 close();
                 state.set("contextUser", user);
+
                 applySettingsToChat();
+
+                setTimeout(() => {
+                  const success = scrollToUserLastMessage(
+                    user.displayName,
+                    node,
+                    true
+                  );
+
+                  if (!success) {
+                    console.log(
+                      `Could not find any messages from user: ${user.displayName}`
+                    );
+                  }
+                }, 100);
               }
             : null,
         },
