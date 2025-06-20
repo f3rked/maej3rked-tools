@@ -1,5 +1,5 @@
 import state from "./state";
-import { BAD_WORDS } from "./constants";
+import { BAD_WORDS, ROOMS } from "./constants";
 import { createTtsLog, pluginName } from "./functions";
 import { clickResetKeybindButton } from "./events";
 
@@ -1153,134 +1153,16 @@ const Config = () => {
               value: "close-stream",
               group: "roombinds",
             },
-            // switchBedroom1
-            {
-              name: "switchBedroom1",
-              label: "Bedroom 1",
-              type: "keybind",
-              value: "bedroom-1",
-              group: "roombinds",
-            },
-            // switchBedroom2
-            {
-              name: "switchBedroom2",
-              label: "Bedroom 2",
-              type: "keybind",
-              value: "bedroom-2",
-              group: "roombinds",
-            },
-            // switchBedroom3
-            {
-              name: "switchBedroom3",
-              label: "Bedroom 3",
-              type: "keybind",
-              value: "bedroom-3",
-              group: "roombinds",
-            },
-            // switchBunk
-            {
-              name: "switchBunk",
-              label: "The Bunk",
-              type: "keybind",
-              value: "the-bunk",
-              group: "roombinds",
-            },
-            // switchHallwayUpstairs
-            {
-              name: "switchHallwayUpstairs",
-              label: "Hallway - Upstairs",
-              type: "keybind",
-              value: "hallway-upstairs",
-              group: "roombinds",
-            },
-            // switchHallwayDownstairs
-            {
-              name: "switchHallwayDownstairs",
-              label: "Hallway - Downstairs",
-              type: "keybind",
-              value: "hallway-downstairs",
-              group: "roombinds",
-            },
-            // switchLivingRoom
-            {
-              name: "switchLivingRoom",
-              label: "Living Room",
-              type: "keybind",
-              value: "living-room",
-              group: "roombinds",
-            },
-            // switchLounge
-            {
-              name: "switchLounge",
-              label: "Lounge",
-              type: "keybind",
-              value: "lounge",
-              group: "roombinds",
-            },
-            // switchBar
-            {
-              name: "switchBar",
-              label: "Bar",
-              type: "keybind",
-              value: "bar",
-              group: "roombinds",
-            },
-            // switchKitchen
-            {
-              name: "switchKitchen",
-              label: "Kitchen",
-              type: "keybind",
-              value: "kitchen",
-              group: "roombinds",
-            },
-            // switchDogHouse
-            {
-              name: "switchDogHouse",
-              label: "Dog House",
-              type: "keybind",
-              value: "dog-house",
-              group: "roombinds",
-            },
-            // switchAttic
-            {
-              name: "switchAttic",
-              label: "Attic",
-              type: "keybind",
-              value: "attic",
-              group: "roombinds",
-            },
-            // switchBathroomUpstairs
-            {
-              name: "switchBathroomUpstairs",
-              label: "Bathroom - Upstairs",
-              type: "keybind",
-              value: "upstairs-bathroom",
-              group: "roombinds",
-            },
-            // switchBathroomDownstairs
-            {
-              name: "switchBathroomDownstairs",
-              label: "Bathroom - Downstairs",
-              type: "keybind",
-              value: "downstairs-bathroom",
-              group: "roombinds",
-            },
-            // switchBathroomMaster
-            {
-              name: "switchBathroomMaster",
-              label: "Bathroom - Master",
-              type: "keybind",
-              value: "master-bathroom",
-              group: "roombinds",
-            },
-            // switchConfessional
-            {
-              name: "switchConfessional",
-              label: "Confessional",
-              type: "keybind",
-              value: "confessional",
-              group: "roombinds",
-            },
+            // get rooms dynamically
+            ...ROOMS.map((room) => {
+              return {
+                name: room.id,
+                label: room.name,
+                type: "keybind",
+                value: room.id,
+                group: "roombinds",
+              };
+            }),
           ],
         },
       },
