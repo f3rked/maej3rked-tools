@@ -11,6 +11,7 @@ import {
   DEFAULT_KEYBINDS,
   REPO_URL_ROOT,
   CLOSE_SVG,
+  ROOM_EFFECTS,
 } from "./constants";
 import Message from "../classes/Message";
 import ELEMENTS from "../data/elements";
@@ -663,6 +664,19 @@ const toggleCinemaMode = () => {
   }
 };
 
+export const getRoomEffects = async (rooms) => {
+  const roomEffects = {};
+  for (const room of rooms) {
+    const effectsResponse = await fetch(
+      `https://api.fishtank.live/v1/live-streams/effects/${room.id}`,
+      { credentials: "same-origin" }
+    );
+    const effectsData = await effectsResponse.json();
+    roomEffects[room.id] = effectsData;
+  }
+  return roomEffects;
+};
+
 const switchToRoom = async (stream) => {
   const currentPlayer = document.querySelector(
     `#live-stream-player-${stream.id}`
@@ -690,15 +704,8 @@ const switchToRoom = async (stream) => {
   if (currentPlayerId) {
     const currentStreamId = currentPlayerId.replace("live-stream-player-", "");
     try {
-      const effectsResponse = await fetch(
-        `https://api.fishtank.live/v1/live-streams/effects/${currentStreamId}`,
-        {
-          credentials: "same-origin",
-        }
-      );
-      const effectsData = await effectsResponse.json();
-
-      const switchAction = effectsData.clickableZones?.find(
+      const effect = ROOM_EFFECTS[currentStreamId];
+      const switchAction = effect.clickableZones?.find(
         (zone) =>
           zone.action?.name === "Change Live Stream" &&
           zone.action?.metadata === stream.id
@@ -713,7 +720,7 @@ const switchToRoom = async (stream) => {
         if (clickableZones) {
           const polygons = clickableZones.querySelectorAll("polygon");
           const targetPolygon = Array.from(polygons).find((_, index) => {
-            return effectsData.clickableZones[index]?.id === switchAction.id;
+            return effect.clickableZones[index]?.id === switchAction.id;
           });
 
           if (targetPolygon) {
@@ -745,18 +752,18 @@ const switchToRoom = async (stream) => {
       const targetButton = document.querySelector(`#${stream.id}`);
       if (targetButton) {
         targetButton.click();
-        if (inCinemaMode) {
-          setTimeout(() => {
-            toggleCinemaMode();
-          }, 150);
-          if (chatHidden) {
-            setTimeout(() => {
-              toggleChat();
-            }, 150);
-          }
-        }
       }
-    }, 150);
+    }, 250);
+    if (inCinemaMode) {
+      setTimeout(() => {
+        toggleCinemaMode();
+      }, 250);
+    }
+    if (chatHidden) {
+      setTimeout(() => {
+        toggleChat();
+      }, 250);
+    }
   }
 };
 

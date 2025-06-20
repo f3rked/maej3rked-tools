@@ -1,4 +1,4 @@
-import { getRooms } from "../modules/functions";
+import { getRooms, getRoomEffects } from "../modules/functions";
 
 export const VERSION = process.env.VERSION;
 
@@ -382,10 +382,9 @@ const DEFAULT_ROOM_KEYS = [
 ];
 
 export const generateDefaultKeybinds = async () => {
-  const rooms = await ROOMS;
   const roomKeybinds = {};
 
-  rooms.forEach((room, index) => {
+  ROOMS.forEach((room, index) => {
     if (index < DEFAULT_ROOM_KEYS.length) {
       roomKeybinds[room.id] = {
         ctrlKey: false,
@@ -399,6 +398,8 @@ export const generateDefaultKeybinds = async () => {
 
   return { ...STATIC_KEYBINDS, ...roomKeybinds };
 };
+
+export const ROOM_EFFECTS = await getRoomEffects(ROOMS);
 
 export const DEFAULT_KEYBINDS = await generateDefaultKeybinds();
 
