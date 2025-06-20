@@ -94,8 +94,6 @@ export const DARK_MODE_STYLES = `
 .live-stream-fullscreen_right___UCNg,
 .episode-fullscreen_left__bNbXb,
 .episode-fullscreen_right__HuAn9,
-.stats_stats__SIg_t,
-.tts-history_tts-history__8_9eB,
 .secondary-panel_secondary-panel__vUc65,
 .experience-bar_experience-bar__nVDge,
 .announcement_announcement__Sow3P,
@@ -107,15 +105,26 @@ export const DARK_MODE_STYLES = `
 .leader-board_leader-board__7KyzK,
 .episode-fullscreen_bonus__scypw,
 .clan-info_clan-info___2J6Z,
+.live-stream-controls_live-stream-volume__4g08X,
+.live-stream-clipping_live-stream-clipping__xkFfU,
+.live-stream-controls_live-stream-quality__6a6cl,
+.item-nav-buttons_item-nav-buttons__wQ6LE,
+.layout_left__O2uku,
+.layout_center-bottom__yhDOH,
+.layout_bottom__qRsMw,
+.live-stream-controls_live-stream-cinema__KrgsR,
+.live-stream-controls_live-stream-fullscreen__VERuK,
 #contestants {
   filter: brightness(0.5) !important;
 }
 
 .top-bar_top-bar___Z0QX{
   filter: brightness(0.5) !important;
+  z-index: 5;
   position: relative;
 }
 
+.live-stream-player_header__58imR,
 .episode_episode__oA49f {
   filter: brightness(0.7);
 }
@@ -147,7 +156,7 @@ export const DARK_MODE_STYLES = `
 }
 
 .chat_chat__2rdNg {
-  filter: brightness(0.9);
+  filter: brightness(0.6);
   border: none;
   box-shadow: none;
   outline-color: rgb(129 129 129) !important;
