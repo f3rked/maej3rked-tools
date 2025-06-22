@@ -1,5 +1,23 @@
 # MAEJ3RKED-TOOLS CHANGE LOG
 
+# **_v2.32.0_**
+
+_Release: 06-21-2025_
+
+### Notes
+
+- N/A
+
+### Bug Fixes
+
+- Fix some issues with dim mode; click profile not working, some element overlap issues, and missing styles
+- Fix camera selection keybinds to be dynamic
+- Add space after mentions
+
+### Features Added / Changed
+
+- Right clicking a mention and clicking view context will scroll back to most recent message for that user prior to mention message
+
 # **_v2.31.0_**
 
 _Release: 06-19-2025_
