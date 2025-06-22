@@ -114,7 +114,7 @@ const Elements = {
           class: "live-stream-player_navigation__VqS_z",
         },
         close: {
-          selector: `[class^="live-stream-player_close__"]`,
+          selector: `[class*="live-stream-player_close__"]`,
           class: "live-stream-player_close__c_GRv",
         },
         name: {
@@ -132,8 +132,15 @@ const Elements = {
       },
     },
     selected: {
-      selector: `[class^="live-streams_selected-live-stream"]`,
+      selector: `[class*="live-streams_selected-live-stream"]`,
       class: `live-streams_selected-live-stream__bFOAj`,
+      id: {
+        selector: `[id^="live-stream-player-camera-"]`,
+      },
+    },
+    clickableZones: {
+      selector: `[class*="clickable-zones_clickable-zones__"]`,
+      class: "clickable-zones_clickable-zones__OgYjT",
     },
     viewers: {
       selector: `[class^="live-stream-player_viewers__"]`,

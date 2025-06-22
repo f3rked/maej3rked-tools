@@ -646,7 +646,7 @@ export const toggleFullscreenButton = (toggle) => {
 
 const isCinemaMode = () => {
   const cinemaButton = document.querySelector(
-    '[class*="live-stream-controls_live-stream-cinema"]'
+    ELEMENTS.livestreams.controls.cinema.selector
   );
   return cinemaButton
     ? Array.from(cinemaButton.classList).some((cls) =>
@@ -657,7 +657,7 @@ const isCinemaMode = () => {
 
 const toggleCinemaMode = () => {
   const cinemaButton = document.querySelector(
-    '[class*="live-stream-controls_live-stream-cinema"] button'
+    `${ELEMENTS.livestreams.controls.cinema.selector} button`
   );
   if (cinemaButton) {
     cinemaButton.click();
@@ -686,7 +686,7 @@ const switchToRoom = async (stream) => {
     return;
   }
   const selectedStream = document.querySelector(
-    '[class*="live-streams_selected-live-stream"]'
+    ELEMENTS.livestreams.selected.selector
   );
 
   if (!selectedStream) {
@@ -698,7 +698,7 @@ const switchToRoom = async (stream) => {
     }
   }
   const currentPlayerId = selectedStream.querySelector(
-    '[id^="live-stream-player-camera-"]'
+    ELEMENTS.livestreams.selected.id.selector
   )?.id;
 
   if (currentPlayerId) {
@@ -715,7 +715,7 @@ const switchToRoom = async (stream) => {
         console.debug(`found switch for ${stream.id}`);
 
         const clickableZones = document.querySelector(
-          '[class*="clickable-zones_clickable-zones"]'
+          ELEMENTS.livestreams.clickableZones.selector
         );
         if (clickableZones) {
           const polygons = clickableZones.querySelectorAll("polygon");
@@ -743,8 +743,9 @@ const switchToRoom = async (stream) => {
   console.debug(`using grid for ${stream.name}`);
   const inCinemaMode = isCinemaMode();
   const closeButton = document.querySelector(
-    '[class*="live-stream-player_close"]'
+    ELEMENTS.livestreams.player.header.close.selector
   );
+
   const chatHidden = isChatHidden();
   if (closeButton) {
     closeButton.click();
