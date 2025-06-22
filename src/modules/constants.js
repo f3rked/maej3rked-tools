@@ -1,3 +1,5 @@
+import { getRooms, getRoomEffects } from "../modules/functions";
+
 export const VERSION = process.env.VERSION;
 
 export const REPO_RAW_ROOT = process.env.REPO.raw;
@@ -335,90 +337,9 @@ export const CHAT_OVERLAY = `
   }
 `;
 
-export const ROOMS = {
-  "living-room": {
-    id: "living-room",
-    name: "Living Room",
-    switchTo: () => {},
-  },
-  lounge: {
-    id: "lounge",
-    name: "Lounge",
-    switchTo: () => {},
-  },
-  bar: {
-    id: "bar",
-    name: "Bar",
-    switchTo: () => {},
-  },
-  kitchen: {
-    id: "kitchen",
-    name: "Kitchen",
-    switchTo: () => {},
-  },
-  "dog-house": {
-    id: "dog-house",
-    name: "Dog House",
-    switchTo: () => {},
-  },
-  "hallway-downstairs": {
-    id: "hallway-downstairs",
-    name: "Hallway Downstairs",
-    switchTo: () => {},
-  },
-  "hallway-upstairs": {
-    id: "hallway-upstairs",
-    name: "Hallway Upstairs",
-    switchTo: () => {},
-  },
-  "bedroom-1": {
-    id: "bedroom-1",
-    name: "Bedroom 1",
-    switchTo: () => {},
-  },
-  "bedroom-2": {
-    id: "bedroom-2",
-    name: "Bedroom 2",
-    switchTo: () => {},
-  },
-  "the-bunk": {
-    id: "the-bunk",
-    name: "The Bunk",
-    switchTo: () => {},
-  },
-  "bedroom-3": {
-    id: "bedroom-3",
-    name: "Bedroom 3",
-    switchTo: () => {},
-  },
-  attic: {
-    id: "attic",
-    name: "Attic",
-    switchTo: () => {},
-  },
-  "upstairs-bathroom": {
-    id: "upstairs-bathroom",
-    name: "Upstairs Bathroom",
-    switchTo: () => {},
-  },
-  "downstairs-bathroom": {
-    id: "downstairs-bathroom",
-    name: "Downstairs Bathroom",
-    switchTo: () => {},
-  },
-  "master-bathroom": {
-    id: "master-bathroom",
-    name: "Master Bathroom",
-    switchTo: () => {},
-  },
-  confessional: {
-    id: "confessional",
-    name: "Confessional",
-    switchTo: () => {},
-  },
-};
+export const ROOMS = await getRooms();
 
-export const DEFAULT_KEYBINDS = {
+const STATIC_KEYBINDS = {
   "toggle-auto": {
     ctrlKey: false,
     altKey: false,
@@ -443,102 +364,52 @@ export const DEFAULT_KEYBINDS = {
     shiftKey: true,
     code: "Space",
   },
-  "living-room": {
-    ctrlKey: false,
-    altKey: false,
-    shiftKey: false,
-    code: "KeyQ",
-  },
-  lounge: {
-    ctrlKey: false,
-    altKey: false,
-    shiftKey: false,
-    code: "KeyW",
-  },
-  bar: {
-    ctrlKey: false,
-    altKey: false,
-    shiftKey: false,
-    code: "KeyE",
-  },
-  kitchen: {
-    ctrlKey: false,
-    altKey: false,
-    shiftKey: false,
-    code: "KeyR",
-  },
-  "dog-house": {
-    ctrlKey: false,
-    altKey: false,
-    shiftKey: false,
-    code: "KeyT",
-  },
-  "hallway-downstairs": {
-    ctrlKey: false,
-    altKey: false,
-    shiftKey: false,
-    code: "KeyY",
-  },
-  "hallway-upstairs": {
-    ctrlKey: false,
-    altKey: false,
-    shiftKey: false,
-    code: "Digit5",
-  },
-  "bedroom-1": {
-    ctrlKey: false,
-    altKey: false,
-    shiftKey: false,
-    code: "Digit1",
-  },
-  "bedroom-2": {
-    ctrlKey: false,
-    altKey: false,
-    shiftKey: false,
-    code: "Digit2",
-  },
-  "bedroom-3": {
-    ctrlKey: false,
-    altKey: false,
-    shiftKey: false,
-    code: "Digit3",
-  },
-  "the-bunk": {
-    ctrlKey: false,
-    altKey: false,
-    shiftKey: false,
-    code: "Digit4",
-  },
-  attic: {
-    ctrlKey: false,
-    altKey: false,
-    shiftKey: false,
-    code: "F1",
-  },
-  "upstairs-bathroom": {
-    ctrlKey: false,
-    altKey: false,
-    shiftKey: false,
-    code: "F2",
-  },
-  "downstairs-bathroom": {
-    ctrlKey: false,
-    altKey: false,
-    shiftKey: false,
-    code: "F3",
-  },
-  "master-bathroom": {
-    ctrlKey: false,
-    altKey: false,
-    shiftKey: false,
-    code: "F4",
-  },
-  confessional: {
-    ctrlKey: false,
-    altKey: false,
-    shiftKey: false,
-    code: "F6",
-  },
 };
+
+const DEFAULT_ROOM_KEYS = [
+  "KeyQ",
+  "KeyW",
+  "KeyE",
+  "KeyR",
+  "KeyT",
+  "KeyY",
+  "Digit1",
+  "Digit2",
+  "Digit3",
+  "Digit4",
+  "Digit5",
+  "F1",
+  "F2",
+  "F3",
+  "F4",
+  "F5",
+  "F6",
+  "F7",
+  "F8",
+  "F9",
+  "F10",
+];
+
+export const generateDefaultKeybinds = async () => {
+  const roomKeybinds = {};
+
+  ROOMS.forEach((room, index) => {
+    if (index < DEFAULT_ROOM_KEYS.length) {
+      roomKeybinds[room.id] = {
+        ctrlKey: false,
+        altKey: false,
+        shiftKey: false,
+        code: DEFAULT_ROOM_KEYS[index],
+        roomId: room.id,
+      };
+    }
+  });
+
+  return { ...STATIC_KEYBINDS, ...roomKeybinds };
+};
+
+export const ROOM_EFFECTS = await getRoomEffects(ROOMS);
+
+export const DEFAULT_KEYBINDS = await generateDefaultKeybinds();
 
 export const CLOSE_SVG = `<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M5 3H3v18h18V3H5zm14 2v14H5V5h14zm-8 4H9V7H7v2h2v2h2v2H9v2H7v2h2v-2h2v-2h2v2h2v2h2v-2h-2v-2h-2v-2h2V9h2V7h-2v2h-2v2h-2V9z" fill="currentColor"></path></svg>`;

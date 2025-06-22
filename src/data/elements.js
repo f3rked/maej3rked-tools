@@ -801,7 +801,7 @@ const Elements = {
       wrapper: { class: [`maejok-input-button-wrapper`] },
       label: {
         class: [`color-button_text__3OQAq`],
-        selector: `[class*="color-button_text__3OQAq"]`,
+        selector: `button[class*="maejok-input-button-bind"] > div`,
       },
       save: { class: [`maejok-input-button-save`, `button_button__p28wJ`] },
       standard: {
