@@ -731,7 +731,6 @@ const switchToRoom = async (stream) => {
               new MouseEvent("click", {
                 bubbles: true,
                 cancelable: true,
-                view: window,
               })
             );
             return;
