@@ -356,6 +356,8 @@ export const createSettingsModal = () => {
       else if (["events-log"].includes(cfg.type))
         createLog(cfg, panel, "Events");
       else if (["tts-log"].includes(cfg.type)) createLog(cfg, panel, "Tts");
+      else if (["winloss-log"].includes(cfg.type))
+        createLog(cfg, panel, "WinLoss");
       else if (["color-picker"].includes(cfg.type))
         createHighlightsPanel(cfg, panel);
     });
@@ -632,14 +634,31 @@ function createLog(list, panel, type) {
   const props = ELEMENTS.settings;
   const logSettings = props[type.toLowerCase()];
 
-  const log = reverse
-    ? list.value.sort((a, b) => b.added - a.added)
-    : list.value.sort((a, b) => a.added - b.added);
+  let log = [];
+  if (type === "WinLoss") {
+    log = list.value;
+  } else {
+    log = reverse
+      ? list.value.sort((a, b) => b.added - a.added)
+      : list.value.sort((a, b) => a.added - b.added);
+  }
+
   const accordion = panel.querySelector(`[data-group-content="${list.group}"]`);
   const wrapper = document.createElement("div");
   accordion ? accordion.appendChild(wrapper) : panel.appendChild(wrapper);
+
+  if (type === "WinLoss") {
+    wrapper.classList.add(logSettings.class);
+    const summaryDiv = document.createElement("div");
+    summaryDiv.innerHTML = log.html;
+    wrapper.appendChild(summaryDiv.firstChild);
+    accordion.appendChild(wrapper);
+    return;
+  }
+
   if (log.length > 0) {
     wrapper.classList.add(logSettings.class);
+
     log.forEach((log) => {
       const message = document.createElement("div");
       message.classList.add(logSettings.item.class);

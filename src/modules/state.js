@@ -1,4 +1,6 @@
 // STATE MANAGEMENT
+import { CONTESTANTS } from "./constants";
+
 const State = () => {
   const defaults = {
     loaded: false,
@@ -30,6 +32,7 @@ const State = () => {
     audioElement: false,
     pendingKeybind: null,
     isShowLive: false,
+    contestantMentions: initializeContestantMentions(),
   };
 
   const get = (key) => {
@@ -52,6 +55,25 @@ const State = () => {
   };
 
   return { get, set };
+};
+
+const initializeContestantMentions = () => {
+  const contestantMentions = {};
+
+  Object.keys(CONTESTANTS).forEach((contestant) => {
+    // update to initialize with stored data
+    contestantMentions[contestant] = {
+      records: {
+        contestant,
+        count: {
+          W: 0,
+          L: 0,
+        },
+      },
+    };
+  });
+
+  return contestantMentions;
 };
 
 export default State();

@@ -408,6 +408,43 @@ export const generateDefaultKeybinds = async () => {
   return { ...STATIC_KEYBINDS, ...roomKeybinds };
 };
 
+export const CONTESTANTS = {
+  daniel: ["Dan", "DANL"],
+  drench: ["Direnc", "Wrench", "Da Wrench", "DaWrench", "DRNC", "drenc"],
+  fred: ["Freddy", "Fredo", "FRDY"],
+  aryeh: ["Arya", "Arye"],
+  elli: ["elly", "ellie"],
+  sam: ["jason", "goldstriker"],
+  prod: ["production"],
+  jet: [],
+  seth: [],
+  mints: [],
+  ben: [],
+  tts: [],
+  director: [],
+  maejok: [],
+  letty: [],
+};
+
+const contestantNames = Object.entries(CONTESTANTS)
+  .flatMap(([key, aliases]) => [key, ...aliases])
+  .filter(Boolean)
+  .map((name) => name.toLowerCase())
+  .join("|");
+const winNearContestant = `\\b(${contestantNames})\\b(?:\\W+\\w+){0,2}?\\W+\\b(w|winner|won)\\b`;
+const contestantNearWin = `\\b(w|winner|won)\\b(?:\\W+\\w+){0,2}?\\W+\\b(${contestantNames})\\b`;
+const lossNearContestant = `\\b(${contestantNames})\\b(?:\\W+\\w+){0,2}?\\W+\\b(l|loser|lost)\\b`;
+const contestantNearLoss = `\\b(l|loser|lost)\\b(?:\\W+\\w+){0,2}?\\W+\\b(${contestantNames})\\b`;
+
+export const CONTESTANT_WIN_REGEX = new RegExp(
+  `${winNearContestant}|${contestantNearWin}`,
+  "gi"
+);
+export const CONTESTANT_LOSS_REGEX = new RegExp(
+  `${lossNearContestant}|${contestantNearLoss}`,
+  "gi"
+);
+
 export const ROOM_EFFECTS = await getRoomEffects(ROOMS);
 
 export const DEFAULT_KEYBINDS = await generateDefaultKeybinds();

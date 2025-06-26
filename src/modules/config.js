@@ -1,6 +1,6 @@
 import state from "./state";
 import { BAD_WORDS, ROOMS } from "./constants";
-import { createTtsLog, pluginName } from "./functions";
+import { createTtsLog, createWinLossLog, pluginName } from "./functions";
 import { clickResetKeybindButton } from "./events";
 
 const Config = () => {
@@ -75,6 +75,7 @@ const Config = () => {
     normalizeGrandText: false,
 
     autoClanChat: false,
+    autoXlChat: false,
     enableEmotesMenu: true,
     pinnedEmotes: [],
     enableChatMenu: true,
@@ -95,6 +96,8 @@ const Config = () => {
 
     friends: [],
     watching: [],
+
+    enableWinLossLog: false,
   };
 
   const pluginObj = {
@@ -861,6 +864,18 @@ const Config = () => {
                 text: `<p>Enabling this option will put you into your clan chat immediately upon loading the site.</p>`,
               },
             },
+            // autoXlChat
+            {
+              name: "autoXlChat",
+              label: "Enter XL Chat Automatically",
+              type: "toggle",
+              value: cfg.autoXlChat,
+              group: "chat-misc",
+              help: {
+                label: "?",
+                text: `<p>Enabling this option will put you into your XL chat immediately upon loading the site.</p>`,
+              },
+            },
             // enableImprovedTagging
             {
               name: "enableImprovedTagging",
@@ -966,6 +981,7 @@ const Config = () => {
             { name: "mentions", label: "Mentions Log" },
             { name: "events", label: "Events Log" },
             { name: "tts", label: "TTS Log" },
+            { name: "win/loss", label: "Win/Loss Log" },
           ],
           inputs: [
             // mentions
@@ -1067,6 +1083,25 @@ const Config = () => {
               type: "tts-log",
               value: createTtsLog(),
               group: "tts",
+            },
+            // win/loss
+            {
+              name: "enableWinLossLog",
+              label: "Enable Win/Loss Logging",
+              type: "toggle",
+              value: cfg.enableWinLossLog,
+              group: "win/loss",
+              help: {
+                label: "?",
+                text: `<p>Enabling this option will store a record of chat favor for various subjects.</p><p>This log will track Ws and Ls in chat for each subject over time.</p>`,
+              },
+            },
+            {
+              name: "winLossLog",
+              label: "Win/Loss Log",
+              type: "winloss-log",
+              value: createWinLossLog(),
+              group: "win/loss",
             },
           ],
         },

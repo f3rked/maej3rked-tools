@@ -505,6 +505,10 @@ const Elements = {
     scroll: {
       selector: `[class^="chat_scroll"]`,
       class: `chat_scroll__6Tqdf`,
+      button: {
+        selector: `[class*="chat-messages_scroll"]`,
+        class: `chat-messages_scroll__div1C`,
+      },
     },
     input: {
       selector: `[id="chat-input"]`,

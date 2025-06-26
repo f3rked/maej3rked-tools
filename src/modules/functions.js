@@ -9,9 +9,12 @@ import {
   BIG_SCREEN_STYLES_OFFLINE,
   BIGSCREEN_STRETCH_STYLES,
   DEFAULT_KEYBINDS,
-  REPO_URL_ROOT,
+  REPO_RAW_ROOT,
   CLOSE_SVG,
   ROOM_EFFECTS,
+  CONTESTANTS,
+  CONTESTANT_WIN_REGEX,
+  CONTESTANT_LOSS_REGEX,
 } from "./constants";
 import Message from "../classes/Message";
 import ELEMENTS from "../data/elements";
@@ -1464,6 +1467,14 @@ export const scrollToUserLastMessage = (
   return false;
 };
 
+// Utility: Check if the scroll-to-bottom button is visible (user is scrolled back)
+function isChatScrolledBackByButton() {
+  const scrollBtn = document.querySelector(
+    ELEMENTS.chat.scroll.button.selector
+  );
+  return scrollBtn && scrollBtn.offsetParent !== null;
+}
+
 export const processChatMessage = (node, logMentions = true) => {
   const cfg = config.get();
   const message = new Message(node);
@@ -1543,6 +1554,31 @@ export const processChatMessage = (node, logMentions = true) => {
     updateRecentChatters(message.sender);
   }
 
+  // --- Contestant Mention Tracking ---
+  if (
+    cfg.enableWinLossLog &&
+    message.type === "message" &&
+    message.body &&
+    message.body.body
+  ) {
+    // Only process win/loss if the scroll-to-bottom button is NOT visible
+    if (isChatScrolledBackByButton()) return;
+    const text = message.body.body.toLowerCase();
+    // Only count one W and one L per contestant per message
+    const winCounted = new Set();
+    const lossCounted = new Set();
+    processWinLossMatches({
+      text,
+      type: "W",
+      countedSet: winCounted,
+    });
+    processWinLossMatches({
+      text,
+      type: "L",
+      countedSet: lossCounted,
+    });
+  }
+
   message.destroy();
 };
 
@@ -1553,21 +1589,6 @@ export const getMinutesAgo = (timestamp) => {
   } else {
     return `${minutes} ${minutes === 1 ? "minute" : "minutes"} ago`;
   }
-};
-
-export const getFormattedEasternTime = (timestamp) => {
-  if (!timestamp) return "";
-  const date = new Date(timestamp);
-  const options = {
-    timeZone: "America/New_York",
-    year: "2-digit",
-    month: "numeric",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  };
-  return date.toLocaleString("en-US", options);
 };
 
 export const uuid = () => {
@@ -2310,6 +2331,10 @@ export const startMaejokTools = async () => {
     enterChat(user.clan.tag);
   }
 
+  if (cfg.autoXlChat && !isPopoutChat) {
+    enterChat("Season Pass XL");
+  }
+
   if (cfg.persistBigScreen && !isPopoutChat) {
     toggleBigScreen(cfg.bigScreenState, true);
   }
@@ -2533,10 +2558,93 @@ function toggleLogoHover(toggleState) {
 
   if (toggleState) {
     const logoHover = document.createElement("img");
-    logoHover.src = `${REPO_URL_ROOT}/blob/06bddd3e353365fc62df0e1415b4cda3cbf07b14/public/images/logo-full-white-red-eyes.png?raw=true`;
+    logoHover.src = `${REPO_RAW_ROOT}/public/images/logo-full-white-red-eyes.png`;
     logoHover.classList.add(...logoSelector.hoverImg.classes);
     logo.insertAdjacentElement("afterend", logoHover);
   } else {
     document.querySelector(logoSelector.hoverImg.selector)?.remove();
+  }
+}
+
+export const updateWinLossRecord = (contestant, type) => {
+  const contestantMentions = state.get("contestantMentions");
+
+  contestantMentions[contestant].records.count[type]++;
+
+  state.set("contestantMentions", contestantMentions);
+};
+
+// Helper to generate a win/loss bar row
+function createWinLossBarRow(type, count, percent) {
+  const typeClass =
+    type === "W" ? "maejok-winloss-bar-w" : "maejok-winloss-bar-l";
+  return `
+    <div class="maejok-winloss-answer-row">
+      <div class="maejok-winloss-answer-label">${type} (${count})</div>
+      <div class="maejok-winloss-answer-bar-container">
+        <div class="maejok-winloss-answer-bar ${typeClass}" style="width: ${percent}%;"></div>
+        <div class="maejok-winloss-answer-percentage">${percent}%</div>
+      </div>
+    </div>
+  `;
+}
+
+export const createWinLossLog = () => {
+  const contestantMentions = state.get("contestantMentions");
+  const summaryArr = Object.keys(contestantMentions).map((key) => {
+    const rec = contestantMentions[key].records;
+    const w = rec.count.W;
+    const l = rec.count.L;
+    const total = w + l;
+    const wPercent = total ? Math.round((w / total) * 100) : 0;
+    return { key, rec, w, l, wPercent };
+  });
+  // Sort by highest win percentage, then by number of wins
+  summaryArr.sort((a, b) => {
+    if (b.wPercent !== a.wPercent) {
+      return b.wPercent - a.wPercent;
+    }
+    return b.w - a.w;
+  });
+  const summaryRows = summaryArr
+    .map(({ rec, w, l, wPercent }) => {
+      const total = w + l;
+      const lPercent = total ? Math.round((l / total) * 100) : 0;
+      const wRow = createWinLossBarRow("W", w, wPercent);
+      const lRow = createWinLossBarRow("L", l, lPercent);
+      return `
+        <div class="maejok-winloss-summary-row">
+          <div class="maejok-winloss-contestant">${rec.contestant.toUpperCase()}</div>
+          <div class="maejok-winloss-answers">
+            ${wRow}${lRow}
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+  const summaryPanel = {
+    html: `<div style="margin-bottom:12px;">${summaryRows}</div>`,
+  };
+
+  return summaryPanel;
+};
+
+function processWinLossMatches({ text, type, countedSet }) {
+  const regex = type === "W" ? CONTESTANT_WIN_REGEX : CONTESTANT_LOSS_REGEX;
+  for (const match of text.matchAll(regex)) {
+    const contestantName = (match[1] || match[2] || "").toLowerCase();
+    if (!contestantName || countedSet.has(contestantName)) continue;
+    for (const [key, aliases] of Object.entries(CONTESTANTS)) {
+      const allNames = [key, ...aliases]
+        .filter(Boolean)
+        .map((n) => n.toLowerCase());
+      if (allNames.includes(contestantName)) {
+        updateWinLossRecord(key, type);
+        console.log(`${key}: ${type}`);
+        console.log(`text: ${text}`);
+        countedSet.add(contestantName);
+        break;
+      }
+    }
   }
 }
