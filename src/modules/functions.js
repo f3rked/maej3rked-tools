@@ -2639,8 +2639,6 @@ function processWinLossMatches({ text, type, countedSet }) {
         .map((n) => n.toLowerCase());
       if (allNames.includes(contestantName)) {
         updateWinLossRecord(key, type);
-        console.log(`${key}: ${type}`);
-        console.log(`text: ${text}`);
         countedSet.add(contestantName);
         break;
       }

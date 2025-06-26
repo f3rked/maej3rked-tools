@@ -1073,7 +1073,9 @@ const Config = () => {
               group: "tts",
               help: {
                 label: "?",
-                text: `<p>Enabling this option will set the tts log to list in order of newest to oldest.</p><p>After toggling this option, you must close and reopen the settings window to see the changes.</p>`,
+                text: `<p>Enabling this option will set the tts log to list in order of newest to oldest.</p>
+                <p>After toggling this option, you must close and reopen the settings window to see the changes.</p>
+                <p><i>Note: This will never be fully accurate. But it gives a decent indication.</i></p>`,
               },
             },
             // ttsLog
@@ -1093,7 +1095,7 @@ const Config = () => {
               group: "win/loss",
               help: {
                 label: "?",
-                text: `<p>Enabling this option will store a record of chat favor for various subjects.</p><p>This log will track Ws and Ls in chat for each subject over time.</p>`,
+                text: `<p>Enabling this option will store a record of chat favor for various subjects.</p><p>This log will track <strong>Ws and Ls</strong> in chat for each subject over time.</p>`,
               },
             },
             {

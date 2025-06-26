@@ -1,5 +1,22 @@
 # MAEJ3RKED-TOOLS CHANGE LOG
 
+# **_v2.33.0_**
+
+_Release: 06-26-2025_
+
+### Notes
+
+- Added win/loss chat mention tracking in the logging section. I'll update this later to be customizable (probably).
+
+### Bug Fixes
+
+- Fix issue with cam switching via polygon (@joshrmcdaniel)
+- Fix logo issue
+
+### Features Added / Changed
+
+- Add tracking win/loss mentions in chat
+
 # **_v2.32.0_**
 
 _Release: 06-21-2025_
@@ -11,7 +28,7 @@ _Release: 06-21-2025_
 ### Bug Fixes
 
 - Fix some issues with dim mode; click profile not working, some element overlap issues, and missing styles
-- Fix camera selection keybinds to be dynamic
+- Fix camera selection keybinds to be dynamic (thanks @joshrmcdaniel)
 - Add space after mentions
 
 ### Features Added / Changed

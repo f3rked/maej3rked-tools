@@ -727,6 +727,15 @@ const Elements = {
         },
       },
     },
+    winloss: {
+      class: "maejok-settings_winloss-list",
+      item: {
+        class: "maejok-settings_winloss-list-item",
+        remove: {
+          class: "maejok-settings_winloss-list-item-remove",
+        },
+      },
+    },
     config: {
       wrapper: { class: "maejok-settings-config-wrapper" },
       group: { class: "maejok-settings-config-input-group" },
