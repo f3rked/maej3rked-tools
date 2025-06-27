@@ -30,6 +30,7 @@ const Config = () => {
     enableCameraNameOverlay: false,
     enableTTSHistoryOverlay: false,
     enableHideChatButton: false,
+    enableActionButtons: true,
     enableUserOverlay: false,
     enableStreamSearch: false,
     controlOverlayDisabled: false,
@@ -600,6 +601,18 @@ const Config = () => {
               help: {
                 label: "?",
                 text: `<p><strong>Enabling this option will display a hide chat button at the top of chat when in theater mode.</strong></p>`,
+              },
+            },
+            // enableActionButtons
+            {
+              name: "enableActionButtons",
+              label: "Enable TTS/SFX/Fishtoy buttons",
+              type: "toggle",
+              value: cfg.enableActionButtons,
+              group: "theater-mode-options",
+              help: {
+                label: "?",
+                text: `<p><strong>Enabling this option will display the TTS, SFX, and Fishtoy buttons at the bottom right when in theater mode.</strong></p>`,
               },
             },
           ],

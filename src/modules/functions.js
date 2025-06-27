@@ -517,6 +517,10 @@ export const handleOverlays = (toggle = true) => {
     toggleUserOverlay(false);
     toggleLogoOverlay(false);
     toggleTimestampOverlay(false);
+    if (config.get("enableActionButtons")) {
+      const theaterButtons = document.querySelectorAll('.maejok-theater-mode-buttons');
+      theaterButtons.forEach(button => button.remove());
+    }
     return;
   }
 
@@ -842,6 +846,97 @@ export const toggleHideChatButton = (toggle) => {
   }
 };
 
+const createTheaterModeButtons = () => {
+  if (document.querySelector('.maejok-theater-buttons')) {
+    return;
+  }
+
+  const theaterButtonsContainer = document.createElement('div');
+  let zIndex = getHighestZIndex();
+  theaterButtonsContainer.className = 'maejok-theater-buttons';
+  theaterButtonsContainer.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: ${++zIndex};
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+  `;
+
+  const chatActions = document.querySelector('[class^="chat-input_actions"]');
+  if (!chatActions) return;
+
+  const buttons = Array.from(chatActions.querySelectorAll('button[type="button"]'));
+  
+  const ttsButton = buttons.find(btn => btn.textContent.trim() === 'TTS');
+  const sfxButton = buttons.find(btn => btn.textContent.trim() === 'SFX');
+  const fishtoyButton = buttons.find(btn => btn.textContent.trim() === 'FISHTOY');
+  
+  // reverse order, but matches the order of buttons in chat.
+  [fishtoyButton, sfxButton, ttsButton].forEach((originalButton, index) => {
+    if (!originalButton) return;
+
+    const buttonText = originalButton.textContent.trim();
+
+    const theaterButton = document.createElement('div');
+    theaterButton.className = 'maejok-theater-mode-buttons';
+    
+    theaterButton.style.cssText = `
+      position: absolute;
+      bottom: 10px;
+      right: ${120 + (index * 80)}px;
+      z-index: ${zIndex};
+    `;
+
+    const button = document.createElement('button');
+    button.style.cssText = `
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border: 1px solid #505050;
+      font-size: 14px;
+      border-radius: 4px;
+      padding: 4px;
+      width: 64px;
+      letter-spacing: -1px;
+      color: #fff;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    `;
+    
+    button.textContent = buttonText;
+
+    button.addEventListener('mouseenter', () => {
+      button.style.borderColor = '#f8ec94';
+      button.style.color = '#f8ec94';
+    });
+    
+    button.addEventListener('mouseleave', () => {
+      button.style.borderColor = '#505050';
+      button.style.color = '#fff';
+    });
+
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      originalButton.click();
+    });
+
+    theaterButton.appendChild(button);
+    
+    const playerContainer = document.querySelector('[id^="live-stream-player-camera-"]');
+    if (playerContainer) {
+      playerContainer.appendChild(theaterButton);
+    }
+  });
+};
+
 const isChatHidden = () => {
   const chat = document.querySelector(ELEMENTS.chat.main.selector);
   return chat?.classList.contains("maejok-hide") || false;
@@ -873,11 +968,18 @@ const toggleChat = () => {
     requestAnimationFrame(() => {
       showChatButton.style.transform = "rotate(45deg)";
     });
+    
+    if (isCinemaMode() && config.get("enableActionButtons")) {
+      console.debug("Creating theater mode buttons");
+      createTheaterModeButtons();
+    }
   } else {
     const showChatButton = document.querySelector(
       ELEMENTS.openChatButton.selector
     );
+    const theaterButtons = document.querySelectorAll('.maejok-theater-mode-buttons');
     showChatButton?.remove();
+    theaterButtons.forEach(button => button.remove());
   }
 };
 
