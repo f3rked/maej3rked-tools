@@ -1,6 +1,7 @@
 import state from "../modules/state";
 import * as events from "../modules/events";
 import * as functions from "../modules/functions";
+import { saveSettings } from "../modules/settings";
 import ELEMENTS from "../data/elements";
 import { CLOSE_SVG } from "../modules/constants";
 
@@ -32,6 +33,14 @@ export default class Modal {
     const backdrop = document.createElement("div");
     backdrop.classList.add(ELEMENTS.modal.backdrop.class);
     backdrop.setAttribute("style", `z-index: ${zIndex + 2}!important`);
+
+    // Add click event to backdrop to close modal when clicking outside
+    backdrop.addEventListener("click", (event) => {
+      if (event.target === backdrop) {
+        saveSettings();
+        events.clickCloseModal(this);
+      }
+    });
 
     this.modal = document.createElement("div");
     this.modal.classList.add(ELEMENTS.modal.class);
