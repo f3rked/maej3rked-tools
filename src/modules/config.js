@@ -34,6 +34,15 @@ const Config = () => {
     enableStreamSearch: false,
     controlOverlayDisabled: false,
     disableSoundEffects: false,
+    customizeSoundEffects: false,
+    navSounds: false,
+    tradingSounds: false,
+    globalMissionsSounds: false,
+    levelingSounds: false,
+    mentionsSounds: false,
+    itemsSounds: false,
+    fishtoysSounds: false,
+    streamsSounds: false,
     hideGlobalMissions: false,
     hideScreenTakeovers: false,
     hideNavigationOverlay: false,
@@ -119,6 +128,7 @@ const Config = () => {
             { name: "site-options", label: "Site-wide Options" },
             { name: "video-player-options", label: "Video Player Options" },
             { name: "theater-mode-options", label: "Theater Mode Options" },
+            { name: "customize-sound-effects", label: "Customize Sound Effects" },
           ],
           inputs: [
             // plugin
@@ -269,7 +279,7 @@ const Config = () => {
               group: "site-options",
               help: {
                 label: "?",
-                text: `<p>Enabling this option will disable sound effects.  This includes mentions, global missions, episode hover static, etc.</p>`,
+                text: `<p>Enabling this option will disable a subset of sound effects.  This includes mentions, global missions, episode hover static, etc.</p>`,
               },
             },
             // hideGlobalMissions
@@ -602,6 +612,18 @@ const Config = () => {
                 text: `<p><strong>Enabling this option will display a hide chat button at the top of chat when in theater mode.</strong></p>`,
               },
             },
+            // customize-sound-effects
+            {
+              name: "customizeSoundEffects",
+              label: "Customize Sound Effects",
+              type: "toggle",
+              value: cfg.customizeSoundEffects,
+              group: "customize-sound-effects",
+              help: {
+                label: "?",
+                text: `<p>Enabling this option will allow you to customize the sound effects.  It will also disable the option to globally disable sound effects.</p>`,
+              },
+            },
           ],
         },
       },
@@ -783,7 +805,7 @@ const Config = () => {
               help: {
                 label: "?",
                 text: `<p>Enabling this option hides messages containing <strong>Slur Spam</strong>.</p>
-                <p>Slurs are really funny right? Well. Yea.  But it's a bit less funny when it's the entire content and just spam.</p>  
+                <p>Slurs are really funny right? Well. Yea.  But it's a bit less funny when it's the entire content and just spam.</p>
                 <p>Hide messages that are slur spam.  Don't worry I won't tell anyone you're a libcuck soyboy.  If a message contains slurs but has other content (likely hilarious), those will still be shown.</p>`,
               },
             },

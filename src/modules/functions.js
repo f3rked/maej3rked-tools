@@ -20,7 +20,7 @@ import Message from "../classes/Message";
 import ELEMENTS from "../data/elements";
 import { rightClick, leftClick, dblClick, keyPress } from "./events";
 import { start as startUpdater, stop as stopUpdater } from "./updater";
-import { applySettingsToChat } from "./settings";
+import { applySettingsToChat, soundSettingsMap } from "./settings";
 import {
   start as startRecentChatters,
   stop as stopRecentChatters,
@@ -1683,12 +1683,39 @@ export const disableSoundEffects = (disable) => {
 
   HTMLAudioElement.prototype.play = function () {
     this.muted = !!disable;
-    if (config.get("hideGiftedPassMessage") && this.src?.includes("twinkle")) {
-      this.muted = true;
-    }
     return audioElement.apply(this, arguments);
   };
 };
+
+export const customizeSoundEffects = (disable) => {
+  const audioElement = state.get("audioElement");
+
+  if (audioElement === false) {
+    state.set("audioElement", HTMLAudioElement.prototype.play);
+    customizeSoundEffects(!!disable);
+    return;
+  }
+
+  HTMLAudioElement.prototype.play = function () {
+    const soundRegex = getSoundRegex();
+
+    if (disable && soundRegex && this.src?.match(getSoundRegex())) {
+      this.volume = 0;
+    } else {
+      this.volume = 0.5;
+    }
+
+    return audioElement.apply(this, arguments);
+  };
+};
+
+function getSoundRegex() {
+  const soundSettings = soundSettingsMap();
+  return Object.values(soundSettings)
+    .filter((value) => value.value)
+    .map((value) => `\\b${value.matching}\\b`)
+    .join("|");
+}
 
 export const isColorTooDark = (color, threshold = 40) => {
   const { r, g, b } = colorToRGB(color);
@@ -1873,6 +1900,7 @@ export const toggleCameraMonitor = (toggle) => {
   cameraMonitor.classList.add("maejok-camera-monitor");
 
   const { container, totalCameras } = createCameras();
+  if (!container) return;
 
   cameraMonitor.innerHTML = `<div class="panel_panel__Tdjid panel_full-height__2dCSF panel_no-padding__woODX panel_collapsible__7RVbk panel_collapsed__9xI1L">
       <div class="panel_header__T2yFW" onclick="this.parentElement.classList.toggle('panel_collapsed__9xI1L')">
@@ -1901,6 +1929,7 @@ export const toggleCameraMonitor = (toggle) => {
     </div>`;
 
   const panelBody = cameraMonitor.querySelector(".panel_body__O5yBA");
+  if (!panelBody) return;
   panelBody.appendChild(container);
   navButtons.insertAdjacentElement("afterend", cameraMonitor);
 };
@@ -2280,6 +2309,7 @@ export const startMaejokTools = async () => {
   }
 
   disableSoundEffects(config.get("disableSoundEffects"));
+  customizeSoundEffects(config.get("customizeSoundEffects"));
   applySettingsToChat();
   refactoredObservers.chat.start();
   refactoredObservers.leftPanel.start();
@@ -2367,6 +2397,7 @@ export const stopMaejokTools = () => {
   observers.modal.stop();
 
   disableSoundEffects(false);
+  customizeSoundEffects(false);
   stopRecentChatters();
   stopUpdater();
   toggleScanLines(false);

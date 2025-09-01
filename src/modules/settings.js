@@ -24,6 +24,7 @@ import {
   mentionUser,
   pluginName,
   disableSoundEffects,
+  customizeSoundEffects,
   toggleScanLines,
   toggleHiddenItems,
   toggleScreenTakeovers,
@@ -91,6 +92,7 @@ export const saveSettings = async () => {
   }
 
   disableSoundEffects(config.get("disableSoundEffects"));
+  customizeSoundEffects(config.get("customizeSoundEffects"));
   toggleDimMode(config.get("enableDimMode"));
   applySettingsToChat();
   toggleScreenTakeovers(config.get("hideScreenTakeovers"));
@@ -360,6 +362,8 @@ export const createSettingsModal = () => {
         createLog(cfg, panel, "WinLoss");
       else if (["color-picker"].includes(cfg.type))
         createHighlightsPanel(cfg, panel);
+
+      if (cfg.group === "customize-sound-effects") createCustomizeSoundEffectsOptions(cfg.value, panel, true);
     });
 
     if (config.name === "about") {
@@ -763,6 +767,45 @@ function createToggle(option, panel, modal) {
   }
 }
 
+export function createCustomizeSoundEffectsOptions(toggle, modal, initializing = false) {
+  const props = ELEMENTS.inputs;
+
+  const settingsConfig = config.settingsOptions();
+  const option = settingsConfig.find(option => option.name === "main").content.inputs.find(option => option.name === "customizeSoundEffects")
+  const accordion = modal.querySelector(
+    `[data-group-content="${option.group}"]`
+  );
+  if (!accordion) {
+    return;
+  }
+  const panel = accordion.parentNode;
+
+  const soundSettings = soundSettingsMap();
+
+  if (toggle) {
+    config.set("disableSoundEffects", false);
+    saveSettings();
+
+    Object.keys(soundSettings).forEach((sound) => {
+      createToggle(soundSettings[sound], panel, modal);
+    });
+
+    if (!initializing) {
+      accordion.previousElementSibling.click();
+      accordion.previousElementSibling.click();
+    }
+  } else {
+    const existingToggles = accordion.querySelectorAll('.maejok-input-group');
+    Array.from(existingToggles).slice(1).forEach(toggle => toggle.remove());
+
+    Object.keys(soundSettings).forEach((sound) => {
+      const setting = soundSettings[sound].name;
+      config.set(setting, false);
+    });
+  }
+
+}
+
 function createKeybindInput(option, panel, modal) {
   const binds = config.get("binds");
   const props = ELEMENTS.inputs;
@@ -880,4 +923,113 @@ function createTabPanel(tab, props) {
   panel.dataset.tab = tab.name;
 
   return panel;
+}
+
+export const soundSettingsMap = () => {
+  return {
+    "trading": {
+      "sounds": ["trade-request", "trade-complete", "trade-accept", "trade-offer"],
+      "matching": "trade-*",
+      "name": "tradingSounds",
+      "label": "Trading",
+      "type": "toggle",
+      "value": config.get("tradingSounds"),
+      "group": "customize-sound-effects",
+      "help": {
+        "label": "?",
+        "text": `<p>Trade requests, completions, accepts, and offers</p>`,
+      },
+    },
+    "global-missions": {
+      "sounds": ["global-mission-3", "global-mission-2", "global-mission-1", "panic", "yes", "complete", "popup-1", "popup-2", "popup-3"],
+      "matching": "global-mission-*|panic|yes|complete",
+      "name": "globalMissionsSounds",
+      "label": "Global Missions",
+      "type": "toggle",
+      "value": config.get("globalMissionsSounds"),
+      "group": "customize-sound-effects",
+      "help": {
+        "label": "?",
+        "text": `<p>Global missions - popups, acceptance, completion, failure</p>`,
+      },
+    },
+    "leveling": {
+      "sounds": ["daily", "level", "xp", "xp-down-1", "xp-down-2", "xp-down-3", "xp-down-4", "xp-down-5", "xp-down-6", "level-up-1", "level-up-2", "level-up-3"],
+      "matching": "xp*|level*",
+      "name": "levelingSounds",
+      "label": "Leveling",
+      "type": "toggle",
+      "value": config.get("levelingSounds"),
+      "group": "customize-sound-effects",
+      "help": {
+        "label": "?",
+        "text": `<p>Daily, level up, level down</p>`,
+      },
+    },
+    "mentions": {
+      "sounds": ["mention"],
+      "matching": "mention",
+      "name": "mentionsSounds",
+      "label": "Mentions",
+      "type": "toggle",
+      "value": config.get("mentionsSounds"),
+      "group": "customize-sound-effects",
+      "help": {
+        "label": "?",
+        "text": `<p>Chat ping sound</p>`,
+      },
+    },
+    "nav": {
+      "sounds": ["blip", "paper", "book", "page", "swap-short", "chunk-short", "twinkle", "click-low-short", "click-high-short", "click-harsh-short", "shutter", "denied"],
+      "matching": "click-*|chunk-*|twinkle|blip|shutter|swap-*|paper|book|denied",
+      "name": "navSounds",
+      "label": "Navigation",
+      "type": "toggle",
+      "value": config.get("navSounds"),
+      "group": "customize-sound-effects",
+      "help": {
+        "label": "?",
+        "text": `<p>Navigation sounds when clicking/hovering on buttons, dropdowns, etc.</p>`,
+      },
+    },
+    "streams": {
+      "sounds": ["new-stream"],
+      "matching": "new-stream",
+      "name": "streamsSounds",
+      "label": "Streams",
+      "type": "toggle",
+      "value": config.get("streamsSounds"),
+      "group": "customize-sound-effects",
+      "help": {
+        "label": "?",
+        "text": `<p>Sound when a new stream is added</p>`,
+      },
+    },
+    "fishtoys": {
+      "sounds": ["horn", "suicide-bomb-1", "suicide-bomb-2", "suicide-bomb-3", "suicide-bomb-4"],
+      "matching": "horn|suicide-bomb-*",
+      "name": "fishtoysSounds",
+      "label": "Fishtoys",
+      "type": "toggle",
+      "value": config.get("fishtoysSounds"),
+      "group": "customize-sound-effects",
+      "help": {
+        "label": "?",
+        "text": `<p>Fishtoys sounds that occur on use such as the horn sound for 'Illegal Immigrants'</p>`,
+      },
+    },
+    "items": {
+      "sounds": ["item-found", "item-craft-success-1", "item-craft-success-2", "item-craft-success-3", "item-craft-fail-1", "item-craft-fail-2", "item-craft-fail-3", "item-craft-fail-4", "item-consumed-new-1", "item-consumed-new-2", "item-consumed-new-3", "item-consumed-new-4"],
+      "matching": "item-*",
+      "name": "itemsSounds",
+      "label": "Items",
+      "type": "toggle",
+      "value": config.get("itemsSounds"),
+      "group": "customize-sound-effects",
+      "help": {
+        "label": "?",
+        "text": `<p>Item found, craft success, craft fail, consumed new</p>`,
+      },
+    }
+  }
 }

@@ -403,6 +403,9 @@ export const clickOpenSettingsModal = () => {
 
 export const clickSettingsToggle = (toggle, label, modal) => {
   playSound("shutter");
+  if (toggle.id === "customizeSoundEffects") {
+    settings.createCustomizeSoundEffectsOptions(!config.get("customizeSoundEffects"), modal.container);
+  }
   if (toggle.checked) {
     label.classList.add("maejok-input-label-checked");
   } else {
