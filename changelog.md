@@ -1,5 +1,21 @@
 # MAEJ3RKED-TOOLS CHANGE LOG
 
+# **_v2.34.1_**
+
+_Release: 09-01-2025_
+
+### Notes
+
+- Added feature to customize what site sounds are enabled. Didn't mean to publish yet oops :). I'm working on also supporting muting any sound by name.
+
+### Bug Fixes
+
+- N/A
+
+### Features Added / Changed
+
+- Add customization of what sounds are muted
+
 # **_v2.33.0_**
 
 _Release: 06-26-2025_
