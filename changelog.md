@@ -1,5 +1,18 @@
 # MAEJ3RKED-TOOLS CHANGE LOG
 
+# **_v2.34.2_**
+
+_Release: 09-07-2025_
+
+### Bug Fixes
+
+- Fixed mentions log showing dm mentions
+- Updated plugin name in after update message and changed it to use toast instead of alert
+
+### Features Added / Changed
+
+- N/A
+
 # **_v2.34.1_**
 
 _Release: 09-01-2025_
