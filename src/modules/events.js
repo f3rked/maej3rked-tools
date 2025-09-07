@@ -14,6 +14,7 @@ import {
   existsInUserList,
   modifyUserList,
   toggleBigScreen,
+  toast,
   toggleControlOverlay,
   playSound,
   setChatInputValue,
@@ -613,11 +614,12 @@ export const clickResetKeybindButton = () => {
 
 function afterUpdateAlert() {
   const showAlert = () => {
-    alert(
-      "After updating MAEJOK-TOOLS, refresh this window to start using the new version"
-    );
+    toast("After updating MAEJ3RKED-TOOLS, refresh this window to start using the new version.");
+
     document.removeEventListener("visibilitychange", showAlert);
   };
+
+
 
   document.addEventListener("visibilitychange", showAlert);
 }
