@@ -128,9 +128,13 @@ export default class Message {
       return;
     }
 
-    return [...this.node.classList].includes(
+    const hasMention = [...this.node.classList].includes(
       ELEMENTS.chat.message.mentioned.class
     );
+
+    const isDM = document.querySelector(ELEMENTS.chat.message.dm.selector);
+
+    return hasMention && !isDM;
   }
 
   isFish() {

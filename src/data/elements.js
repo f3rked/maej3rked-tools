@@ -405,6 +405,10 @@ const Elements = {
         selector: `[class^="chat-message-default_mention"]`,
         class: `chat-message-default_mention__Ieq18`,
       },
+      dm: {
+        selector: `[class*="chat-messages_dm__"]`,
+        class: `chat-messages_dm__XnoZx`,
+      },
       mentioned: {
         selector: `[class*="chat-message-default_mentioned"]`,
         class: `chat-message-default_mentioned__EDIeq`,
