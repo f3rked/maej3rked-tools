@@ -1006,8 +1006,8 @@ export const soundSettingsMap = () => {
       },
     },
     "fishtoys": {
-      "sounds": ["horn", "suicide-bomb-1", "suicide-bomb-2", "suicide-bomb-3", "suicide-bomb-4", "nuke-1", "nuke-2", "nuke-3", "nuke-4", "nuke-5"],
-      "matching": "horn|suicide-bomb.*|nuke.*",
+      "sounds": ["horn", "suicide-bomb-1", "suicide-bomb-2", "suicide-bomb-3", "suicide-bomb-4", "nuke-1", "nuke-2", "nuke-3", "nuke-4", "nuke-5", "cruel", "battle-chat"],
+      "matching": "horn|suicide-bomb.*|nuke.*|cruel|battle-.*",
       "name": "fishtoysSounds",
       "label": "Disable Fishtoy Sounds",
       "type": "toggle",
@@ -1015,7 +1015,7 @@ export const soundSettingsMap = () => {
       "group": "customize-sound-effects",
       "help": {
         "label": "?",
-        "text": `<p>Fishtoys sounds that occur on use such as the horn sound for 'Illegal Immigrants', grenades, nukes</p>`,
+        "text": `<p>Fishtoys sounds that occur on use such as the horn sound for 'Illegal Immigrants', grenades, nukes, battle chat</p>`,
       },
     },
     "items": {

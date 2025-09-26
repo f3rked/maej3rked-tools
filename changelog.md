@@ -1,5 +1,17 @@
 # MAEJ3RKED-TOOLS CHANGE LOG
 
+# **_v2.34.3_**
+
+_Release: 09-26-2025_
+
+### Bug Fixes
+
+- N/A
+
+### Features Added / Changed
+
+- add battle chat sounds to option for disabling fishtoy sounds
+
 # **_v2.34.2_**
 
 _Release: 09-07-2025_

@@ -1699,10 +1699,12 @@ export const customizeSoundEffects = (disable) => {
   HTMLAudioElement.prototype.play = function () {
     const soundRegex = getSoundRegex();
 
-    if (disable && soundRegex && this.src?.match(getSoundRegex())) {
+    if (disable && soundRegex && this.src?.match(soundRegex)) {
       this.volume = 0;
-    } else {
+    } else if (this.src?.match(soundSettingsMap().nav.matching)) {
       this.volume = 0.5;
+    } else {
+      this.volume = 0.3;
     }
 
     return audioElement.apply(this, arguments);
