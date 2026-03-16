@@ -184,8 +184,10 @@ const observers = {
       });
 
       // Start observing only direct children of `__next` to detect modal open/close
-      modalObserver.observe(nextElement, { childList: true });
-
+      if (nextElement) {
+        modalObserver.observe(nextElement, { childList: true });
+      }
+      
       state.set("observers", {
         ...state.get("observers"),
         modal: modalObserver,

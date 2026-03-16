@@ -1,5 +1,17 @@
 # MAEJ3RKED-TOOLS CHANGE LOG
 
+# **_v2.34.4_**
+
+_Release: 03-15-2026_
+
+### Bug Fixes
+
+- fix allowed URLs
+
+### Features Added / Changed
+
+- N/A
+
 # **_v2.34.3_**
 
 _Release: 09-26-2025_

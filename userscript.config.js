@@ -9,11 +9,7 @@
 // @icon         __ICON__
 // @updateURL    __UPDATEURL__
 // @supportURL   __SUPPORTURL__
-// @match        https://www.fishtank.live/
-// @match        https://www.fishtank.live/clips
-// @match        https://www.fishtank.live/clip/*
-// @match        https://www.fishtank.live/chat
-// @match        https://www.fishtank.live/episodes
+// @match        https://*.fishtank.live/
 // @connect      fishtank.live
 // @connect      api.fishtank.live
 // @grant        GM_xmlhttpRequest
